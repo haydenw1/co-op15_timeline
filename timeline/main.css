@@ -9,15 +9,11 @@ html, body{
 
 .svg {
   position: relative;
-  z-index: 4;
-}
-
-.viewer-svg{
   z-index: 3;
 }
 
-.viewer-svg-top{
-  z-index: 5;
+.viewer-svg{
+  z-index: 4;
 }
 
 /*styling for date that event happened*/
@@ -29,17 +25,6 @@ html, body{
 	font-weight: 300;
 	-webkit-transform: translate3d(0, 0, 0); /*fixes (sort of) some issues that arise from safari and chrome address bars...may not need in app)*/
 }
-
-/*
-.sideAxisDiv{
-	width: 50px;
-	position: fixed;
-	top: 0px;
-	bottom: 0px;
-	right: 0px;
-	z-index: -1;
-}*/
-
 
 /*positions and style text of div that holds pictures and text of events*/
 .text-holder {

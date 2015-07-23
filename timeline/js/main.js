@@ -1,37 +1,32 @@
-//
-//start pre-json js
-//
-
 //sets width/height/padding variables for use...height of timeline determined with "totalHeight"
 var width = document.documentElement.clientWidth,
-    height = document.documentElement.clientHeight,
-    padding = document.documentElement.clientHeight/2,
+  height = document.documentElement.clientHeight,
+  padding = document.documentElement.clientHeight/2,
 
-    textHolderWidth = width * 0.7,
-    rightSpace = width - (width * 0.7),
-    rightSpacePadding = rightSpace / 18,
-    circleDimensions = rightSpace * (7 / 8),
-    timelineXPos = width * (15.5 / 16),
+  textHolderWidth = width * 0.7,
 
-    viewerWidth = rightSpace, //* (9 / 8),
-    viewerHeight = viewerWidth / 3, // * (2 / 3),
-    viewerXPos = timelineXPos - viewerWidth,
-    viewerYPos = (height / 2) - (viewerHeight / 2),
+  rightSpace = width - (width * 0.7),
+  rightSpacePadding = rightSpace / 18,
 
-    viewerTop = viewerYPos,
-    viewerBottom = viewerYPos + viewerHeight;
+  circleDimensions = rightSpace * (7 / 8),
 
-console.log(viewerBottom);
-console.log(viewerTop);
+  timelineXPos = width * (15.5 / 16),
+
+  viewerWidth = rightSpace,
+  viewerHeight = viewerWidth / 3,
+  viewerXPos = timelineXPos - viewerWidth,
+  viewerYPos = (height / 2) - (viewerHeight / 2),
+  viewerTop = viewerYPos,
+  viewerBottom = viewerYPos + viewerHeight;
 
 var viewerLineData = [
-    { "x": 0, "y": 0},
-    { "x": viewerWidth * (3 / 4), "y": 0},
-    { "x": viewerWidth, "y": viewerHeight/2},
-    { "x": viewerWidth * (3 / 4), "y": viewerHeight},
-    { "x": 0, "y": viewerHeight},
-    { "x": 0, "y": 0}
-  ]
+  { "x": 0, "y": 0},
+  { "x": viewerWidth * (3 / 4), "y": 0},
+  { "x": viewerWidth, "y": viewerHeight/2},
+  { "x": viewerWidth * (3 / 4), "y": viewerHeight},
+  { "x": 0, "y": viewerHeight},
+  { "x": 0, "y": 0}
+]
 
 var viewerLine = d3.svg.line()
   .x(function(d){ return d.x;})
@@ -39,7 +34,7 @@ var viewerLine = d3.svg.line()
   .interpolate("linear");
 
 var viewer = d3.select( "body" )
-    .append("svg")
+  .append("svg")
     .attr("class","viewer-svg")
     .attr("width", viewerWidth)
     .attr("height", viewerHeight)
@@ -53,55 +48,24 @@ var viewer = d3.select( "body" )
     .attr("stroke-width","0px")
     .attr("fill","#9F6FE8");
 
-    //dark = #830CE8;
-
-    //.attr("x", viewerXPos)
-    //.attr("y", viewerYPos);
-
-
-
-
-//for fixed total timeline on side...removed for now
-/*var sideAxisDiv = document.createElement("div");
-    sideAxisDiv.setAttribute("class","sideAxisDiv");
-    sideAxisDiv.style.height = height;
-  document.body.appendChild(sideAxisDiv);*/
+  //dark = #830CE8;
 
 //d3, line element that uses 'linePoints' array (above) to build main 'timeline' line
-var timeline = d3.svg.line()
+/*var timeline = d3.svg.line()
   .x(function(d){return d.x;})
   .y(function(d){return d.y;})
-  .interpolate("linear");
-/*
-//function used to limit the year to last two digits..taken out for right now
-function checkDate(date){
-  date = date.toString();
-  var dateLength = date.toString().length;
-
-  if(dateLength > 2){
-    return date.slice(1,3);
-  }
-  return date;
-}*/
+  .interpolate("linear");*/
 
 //creates single div to hold event text and pics, appends to DOM
 var textHolder = document.createElement("div");
-    textHolder.setAttribute("class","text-holder");
-    textHolder.style.width = (width * 0.7) + "px";
-    textHolder.style.height = (height + 6) + "px";
-
-/*
-//creates text and img elements to hold event pic and text, and appends both to 'textHolder' div (above)..taken out for now
-var pic = document.createElement("img");
-    pic.setAttribute("class","picture");
-    pic.setAttribute("id","pic");
-    pic.style.opacity = 0; //default state is hidden until user interacts with page
-    pic.style.width = (width * 0.6) + "px";*/
+  textHolder.setAttribute("class","text-holder");
+  textHolder.style.width = (width * 0.7) + "px";
+  textHolder.style.height = (height + 6) + "px";
 
 var para = document.createElement("p");
-    para.setAttribute("class","text");
-    para.setAttribute("id","p");
-    para.style.opacity = 0; //default state is hidden until user interacts with page
+  para.setAttribute("class","text");
+  para.setAttribute("id","p");
+  para.style.opacity = 0; //default state is hidden until user interacts with page
 
 //textHolder.appendChild(pic);//append pic <img> to holder div...see above
 textHolder.appendChild(para);//append para <p> to holder div
@@ -112,36 +76,200 @@ console.log((width - (width * 0.7))/18);
 console.log((width - (width * 0.7))/(9/8));
 
 //
-//end pre-json js
-//
-
-//
 //import json and create elements that need to reference the json
 //
 
 //array of objects for each school event. holds a description ("event"), a date ("date"), and an associated picture ("pic")
-d3.json("data/data.json", function(error, data){
-  if(error) return console.log(error);
+//d3.json("data/data.json", function(error, data){
 
-  var totalHeight = document.documentElement.clientHeight * (data.length/2.5);//height of main timeline determined with "totalHeight"
+//local dataset for testing//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var data = [
+  {
+    "description":"Mark Ellingson, President of the Rochester Athenaeum & Mechanics Institute (RAMI) takes over the Empire State School of Printing located in Ithaca, New York, and it becomes a two-year program.",
+    "date":"1/1/1937",
+    "pic":"cias.jpg"
+  },
 
-  //saves earliest and latest dates (based on order in array)
+  {
+    "description":"20 freshman enroll in the program with the first major printing project by the department being the student newspaper, PSIMAR.",
+    "date":"1/1/1938",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Students take over the editorial page of the Democrat and Chronicle for one issue.",
+    "date":"1/1/1939",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Rochester Athenaeum & Mechanics Institute becomes Rochester Institute of Technology.",
+    "date":"1/1/1944",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"SPM moves into Clark Building with enrollment dramatically increasing to 136 due to the end of WWII.",
+    "date":"1/1/1946",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"First 4-color illustration appears in Student Publication, Rochester Institute of Technology (SPRIT)",
+    "date":"1/1/1947",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"RIT and the Lithographic Technical Foundation sponsor a Web Offset Conference and propose a new web press purchase for the school. Gannett Company donates a Teletypesetter system to the School of Printing.",
+    "date":"1/1/1948",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"SPRIT changes its name to RIT Reporter.",
+    "date":"1/1/1951",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"One-third of seniors major in offset lithography; two-thirds major in letterpress printing. Frank Gannett is presented the prestigious Founders Award for his service to the Institute.",
+    "date":"1/1/1952",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Ellen Eggleton becomes the first woman to receive an Associate of Applied from the School of Printing.",
+    "date":"1/1/1953",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Printing students Carl Nelson and Arthur Borock convince the Athletic Board to adopt the tiger emblem to represent RIT sports.",
+    "date":"1/1/1955",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"A section of the Hand Composition Laboratory is dedicated in memoriam to prominent typography, Frederic W. Goudy.",
+    "date":"1/1/1961",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Flexography and gravure printing become part of the curriculum.",
+    "date":"1/1/1965",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"New Goss C-38 publication press is installed on the campus.",
+    "date":"1/1/1967",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Melbert B. Cary Jr., Graphic Arts Collection is donated, housing historical and current examples of “fine” printing.",
+    "date":"1/1/1969",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"250 freshman enter the program making the total number enrolled an impressive 661 students. MBO folding machine for bindery is donated. Now all major printing processes are represented with up-to-date equipment.",
+    "date":"1/1/1977",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"150th Anniversary of RIT",
+    "date":"1/1/1978",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Renovation and rededication of the Cary Graphic Arts Collection is finished.",
+    "date":"1/1/1979",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Labs are updated with $4.2 million in computer equipment.",
+    "date":"1/1/1982",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"A SCR-40 Scanning densitometer, a Linotype/Paul scanner, and a Compugraphics typesetter are donated.",
+    "date":"1/1/1983",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Cary Library no longer has a “look but don’t touch” policy and is open for use.",
+    "date":"1/1/1984",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"The newspaper production lab that supported the degree program, News Paper Operations Management, begins using a digital page layout system.",
+    "date":"1/1/1996",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"New Media courses are first offered as part of SPM curriculum.",
+    "date":"1/1/1997",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"The Digital Publishing Center is established, printing student work at RIT.",
+    "date":"1/1/1998",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"RIT is selected by the Alfred P. Sloan Foundation to become one of twenty-six Sloan Industry Centers. This center is dedicated to studying major business environment influences in the printing industry.",
+    "date":"1/1/2001",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"The Printing Applications Lab at RIT is donated a Sunday 2000 press.",
+    "date":"1/1/2005",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"Open Publishing Lab is founded, researching new methods of content creation and developing open source applications for publishing across various media.",
+    "date":"1/1/2007",
+    "pic":"cias.jpg"
+  },
+
+  {
+    "description":"75th Anniversary of the School of Print Media.",
+    "date":"1/1/2012",
+    "pic":"cias.jpg"
+  }
+];
+//end local data for testing//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //if(error) return console.log(error);
+
+  var totalHeight = document.documentElement.clientHeight * (data.length/2.5);
+
   var xLow = new Date(data[0].date),
-      xHigh = new Date(data[(data.length)-1].date);
+    xHigh = new Date(data[(data.length)-1].date);
 
   //d3, time scale for event placement on timeline
   var yScale = d3.time.scale()
-    .domain([xLow, xHigh])//uses saved earliest and latest dates (above) to determine range of scale
-    .range([padding, totalHeight - padding]);//determines how far first and last event are to screen edge w/ 'padding' variable (above)
-
-  /*var yScaleSide = d3.time.scale()
     .domain([xLow, xHigh])
-    .range([padding/5,totalHeight]);*/
+    .range([padding, totalHeight - padding]);
 
-  var  yScaleSideAxis = d3.svg.axis()
+  var yScaleSideAxis = d3.svg.axis()
     .scale(yScale)
     .orient("left")
-    .ticks(d3.time.years, 1);
+    .ticks(d3.time.years, 1)
+    .innerTickSize(20);
 
   //array of coordinates used to build the main 'timeline' line, which runs the entire lenght of the screen
   var linePoints = [
@@ -160,117 +288,70 @@ d3.json("data/data.json", function(error, data){
   svg.append("g")
     .attr("class","timeline_path")
     .style("transform", "translate(" + timelineXPos + "px,0px)")
-    //.attr("d", timeline(linePoints))
     .call(yScaleSideAxis);
-
-    //.attr("stroke", "rgba(90,90,90,1)")
-    //.attr("stroke-width", 2)
-    //.attr("fill", "none");
-
-  /*var sideScale = d3.select(".sideAxisDiv")
-   .append("svg")
-    .attr("width","50px")
-    .attr("height",height)
-   .append("g")
-    .attr("class","sideScale_container")
-    .style("transform", "translate(50px,0px)")
-    .call(yScaleSideAxis);
-
-  d3.selectAll(".tick text")
-    .style("font-size","65%")
-    .attr("dy",".30em");*/
 
   //creates circle for every data point and g to enclose them all
-  var circles = svg.append("g") //group to hold all circles
-    .selectAll(".circle")
-    .data(data) //binds data (above) to elements
-    .enter()
-   .append("circle") //creates circle for every object in data array
-    .attr("class", "circle")
-    .attr("cx", width/1.225) //sets x position of circle
-    .attr("cy", function(d){return yScale(new Date(d.date));}) //sets y position (based on date of object in data)
-    .attr("r", circleDimensions/10)
-    .attr("stroke", "#0099CC")
-    .attr("stroke-width", 1)
-    .attr("fill", "#0099CC");
+  var circles = svg
+    .append("g") //group to hold all circles
+      .selectAll(".circle")
+      .data(data) //binds data (above) to elements
+      .enter()
+    .append("circle") //creates circle for every object in data array
+      .attr("class", "circle")
+      .attr("cx", timelineXPos) //sets x position of circle
+      .attr("cy", function(d){return yScale(new Date(d.date));}) //sets y position (based on date of object in data)
+      .attr("r", circleDimensions/15)
+      .attr("stroke", "#0099CC")
+      .attr("stroke-width", 1)
+      .attr("fill", "#0099CC");
 
-  var points = []; //array to be filled with top and bottom coordinates of every circle, used in [verticle_touch.js]
-  var cHolder = circles[0]; //variable to hold d3 array to simplify syntax below
-  //fills points array with top and bottom coordinates of every circle
+  var points = [];
+  var cHolder = circles[0];
+
   for(var i = 0; i < cHolder.length; i++){
     points.push({
-      "top": parseInt(cHolder[i].getAttribute("cy")) - parseFloat(cHolder[i].getAttribute("r")), //get center of circle and subtract radius to find top point, add to points[]
-      "bottom": parseInt(cHolder[i].getAttribute("cy")) + parseFloat(cHolder[i].getAttribute("r")) //get center of circle and add radius to find bottom point, add to points[]
+      "top": parseInt(cHolder[i].getAttribute("cy")) - parseFloat(cHolder[i].getAttribute("r")),
+      "bottom": parseInt(cHolder[i].getAttribute("cy")) + parseFloat(cHolder[i].getAttribute("r"))
     });
   }
 
-/*
-  //creates year text node for every data point and g to enclose them all
-  var yearTextG = svg.append("g") //group for year texts, used in [verticle_touch.js]
-    .selectAll(".yearText")
-    .data(data) //binds data (above) to elements
-    .enter().append("text")
-    .attr("class","yearText")
-    .attr("x", width/1.175 - 20) //sets x position of year text, moved slightly to fit in circle
-    .attr("y", function(d){return yScale(new Date(d.date)) + 11;}) //sets y position of year text (based on date of object in data) moved slightly to fit in circle
-    .attr("fill", "gray")
-    .text(function(d){
-      return new Date(d.date).getYear() + 1900; //gets date from data object and converts into date object, concatenates single quote for year notation (ex. '82)
-    });
-*/
-
-  //
-  //start touch and and scroll interactive js (previously touch.js)
-  //
-
-  /*
-  //select all circles and bind touch event listener which scrolls them to the middle of the screen..taken out for now
-  svg.selectAll(".circle")
-    .on("touchstart", function(){
-      var pos = circles[0].indexOf(this), //index of clicked element in array of circle elements
-        elementTop = points[pos].top, //gets top coordinate of element from array in [verticle.html] that was created when the elements were
-          elementBottom = points[pos].bottom, //gets bottom coordinate of element from array in [verticle.html] that was created when the elements were
-          elementCenter = (((elementTop + elementBottom)/2) - ((height)/2)); //finds middle coordinate of element
-
-      $( 'html, body' ).animate({scrollTop: elementCenter}, 500);
-    });
-  */
-
-  //binds listener to html element that is looking for movement (scrolling with finger)
+  // binds listener to html element that is looking for movement (scrolling with
+  // finger)
   d3.select("html").on("touchmove",function(){
-    isScrolledIntoView(); //send all elements and their positions to 'isScrolledIntoView'
+    isScrolledIntoView();
   });
 
-  //calls 'isScrolledIntoView' every 1/4 second, necessary because of 'momentum' scrolling on mobile (called at bottom of page)
+  // calls 'isScrolledIntoView' every 1/4 second, necessary because of 'momentum'
+  // scrolling on mobile (called at bottom of page)
   function scrollCheck(){
     setTimeout(function(){
       isScrolledIntoView();
-      scrollCheck(); //calls itself and runs as longer as user is on page
-    },250); //time between checks
+      scrollCheck();
+    },250);
   }
 
   //sees if circle elements are within certain bounds
   function isScrolledIntoView(){
-    var badCounter = 0,                         //counter to see if all circle elements are out of bounds
-        bodyScroll = $( "body" ).scrollTop(),   //jquery, how far page has been scrolled
-        d3Circle,                               //
-        element,                                //circle element being checked
-        elementTop,                             //element top coordinate relative to scroll amound
-        elementBottom;                          //element bottom coordinate relative to scroll amound
+    var badCounter = 0,                       //counter to see if all circle elements are out of bounds
+      bodyScroll = $( "body" ).scrollTop(),   //jquery, how far page has been scrolled
+      d3Circle,                               //
+      element,                                //circle element being checked
+      elementTop,                             //element top coordinate relative to scroll amound
+      elementBottom;                          //element bottom coordinate relative to scroll amound
 
 
     for(var i = 0; i < circles[0].length; i++){
-      element = circles[0][i];
-      elementTop = points[i].top - bodyScroll;
-      elementBottom = points[i].bottom - bodyScroll;
-
+      element = circles[0][i],
+      elementTop = points[i].top - bodyScroll,
+      elementBottom = points[i].bottom - bodyScroll,
+      elementCenter = (elementTop + elementBottom) / 2;
       d3Circle = d3.select(element);
 
-      if(elementBottom >= viewerTop && elementTop <= viewerBottom){
-        d3Circle.transition().attr("stroke", "black");
+      if(elementCenter >= viewerTop && elementCenter <= viewerBottom){
+        d3Circle.transition().ease("elastic").attr("r", circleDimensions/6.3);
         showTP(i);
       }else{
-        d3Circle.transition().attr("stroke","#0099CC");
+        d3Circle.transition().ease("elastic").attr("r", circleDimensions/15);
         badCounter === data.length - 1 ? hideTP() : false; //***checks to see if all circles are out of bounds
         badCounter++;
       }
@@ -278,7 +359,7 @@ d3.json("data/data.json", function(error, data){
   }
 
   //var picElement = d3.select("#pic"), picElement = picElement[0][0];
-    var textElement = d3.select("#p"), textElement = textElement[0][0];
+  var textElement = d3.select("#p"), textElement = textElement[0][0];
 
   //selects corresponding DOM text and picture objects using passed position and displays them
   function showTP(pos){
@@ -286,22 +367,8 @@ d3.json("data/data.json", function(error, data){
         textObject = data[pos].description;
 
     makeYearText(pos);
-
     textElement.innerHTML = textObject;
-
     textElement.style.opacity = 1;
-  }
-
-  function makeYearText(pos){
-    var yearText = d3.select(".viewer-svg").selectAll("text")
-      .data([data[pos]]);
-
-    yearText.text(function(d){return new Date(d.date).getYear() + 1900;});
-
-    yearText.enter().append("text")
-      .attr("x", viewerWidth / 12)
-      .attr("y", viewerHeight - (viewerHeight / 4))
-      .text(function(d){return new Date(d.date).getYear() + 1900;});
   }
 
   //selects correspoinding DOM text and picture objects using passed position and hides them
@@ -312,28 +379,43 @@ d3.json("data/data.json", function(error, data){
     }
   }
 
+  function makeYearText(pos){
+    var yearText = d3.select(".viewer-svg").selectAll("text")
+      .data([data[pos]]);
+
+    yearText.text(function(d){return new Date(d.date).getYear() + 1900;});
+
+    yearText.enter()
+      .append("text")
+        .attr("x", viewerWidth / 8)
+        .attr("y", viewerHeight - (viewerHeight / 4))
+        .attr("fill", "white")
+        .style("font-size", "188%")
+        .style("text-shadow","2px 2px 2px rgba(0,0,0,.5)")
+        .text(function(d){return new Date(d.date).getYear() + 1900;});
+  }
+
   function deleteYearText(){
     var d3Viewer = d3.select(".viewer-svg");
     d3Viewer.selectAll("text")
       .remove();
   }
 
-  var buttonNav = d3.select(".button.nav"); //button that will turn automatic showing of description and picture off/on
-  var buttonPrev = d3.select(".button.prev");
-  var buttonNext = d3.select(".button.next");
+  $( document ).ready(function(){
+    var buttonNav = d3.select(".button.nav"); //button that will turn automatic showing of description and picture off/on
+    var buttonPrev = d3.select(".button.prev");
+    var buttonNext = d3.select(".button.next");
+
 
     buttonNav.on("touchstart", function(){
-      console.log(this);
       d3.select(this).attr("id", "active");
     });
 
     buttonNav.on("touchend", function(){
-      console.log(this);
       d3.select(this).attr("id", null);
     });
 
     buttonPrev.on("touchstart", function(){
-      console.log(this);
       d3.select(this).attr("id", "active");
       var elementCenter = goPrevNext(0);
       $( 'html, body' ).animate({scrollTop: elementCenter - height/2}, 500);
@@ -353,53 +435,56 @@ d3.json("data/data.json", function(error, data){
       d3.select(this).attr("id", null);
     });
 
-  function goPrevNext(direction){
-    console.log("coleslaw prev");
-    console.log(direction);
-    var scrollCenter = $( "body" ).scrollTop() + height/2,
-        scrollQuarter = scrollCenter - height/4,
-        scrollThreeQuarter = scrollCenter + height/4;
+    function goPrevNext(direction){
+      var scrollTop = $( "body" ).scrollTop() + viewerTop,
+        scrollBottom = $( "body" ).scrollTop() + viewerBottom;
 
-    if(direction === 0){
-      for(var i = 0; i < circles[0].length; i++){
-        var element = circles[0][i],
-        elementTop = points[i].top,
-        elementBottom = points[i].bottom,
-        elementCenter = ((elementTop + elementBottom)/2);
+        console.log(scrollTop);
+        console.log(scrollBottom);
+        //console.log(direction);
+          //scrollQuarter = scrollCenter - height/4,
+          //scrollThreeQuarter = scrollCenter + height/4;
 
-        if(i > 0 && elementCenter >= scrollQuarter){
-          --i;
-          elementTop = points[i].top;
-          elementBottom = points[i].bottom;
+      if(direction === 0){
+        for(var i = 0; i < circles[0].length; i++){
+          var element = circles[0][i],
+          elementTop = points[i].top,
+          elementBottom = points[i].bottom,
           elementCenter = ((elementTop + elementBottom)/2);
-          return elementCenter;
-        }
-      }
-    }else{
-      for(var a = 0; a < circles[0].length; a++){
-        var elementA = circles[0][a],
-        elementTopA = points[a].top,
-        elementBottomA = points[a].bottom,
-        elementCenterA = ((elementTopA + elementBottomA)/2);
 
-        if(elementCenterA >= scrollThreeQuarter){
-          return elementCenterA;
-        }else if(a == circles[0].length -1){
-          return elementCenterA;
+          console.log(elementCenter);
+
+          if(i > 0 && elementCenter >= scrollTop){
+            console.log("going down");
+            --i;
+            elementTop = points[i].top;
+            elementBottom = points[i].bottom;
+            elementCenter = ((elementTop + elementBottom)/2);
+            return elementCenter;
+          }
+        }
+      }else{
+        for(var a = 0; a < circles[0].length; a++){
+          var elementA = circles[0][a],
+          elementTopA = points[a].top,
+          elementBottomA = points[a].bottom,
+          elementCenterA = ((elementTopA + elementBottomA)/2);
+
+          console.log(elementCenterA);
+
+          if(elementCenterA >= scrollBottom){
+            console.log("going up!");
+            return elementCenterA;
+          }else if(a == circles[0].length -1){
+            return elementCenterA;
+          }
         }
       }
     }
-  }
+  });
 
   scrollCheck(); //starts reoccuring, time-delayed function (above)
+//});
 
-  //
-  //end touch and scroll interactive js (prevously touch.js)
-  //
-});
-
-//
-//end json import anonymous function
-//
 
 
