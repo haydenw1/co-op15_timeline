@@ -132,7 +132,7 @@ function makeSvgAndTimeline(circleRadius, data, earliest, height, latest, p, rig
     .attr("height", totalH);
 
   svg.append("g")                   //creates and appends the main 'timeline' line
-    .attr("class","timeline_path")
+    .attr("class","timeline-path")
     .style("transform", "translate(" + timelineX + "px,0px)")
     .call(yScaleSideAxis);
 
@@ -229,7 +229,7 @@ function makeYearText(data, pos, viewerH, viewerW){
       .attr("y", viewerH - (viewerH / 4))
       .attr("fill", "white")
       .style("font-size", (viewerH - (viewerH / 8)) + "px")
-      .style("text-shadow","2px 2px 2px rgba(0,0,0,.5)")
+      .style("text-shadow","2px 3px 4px rgba(0,0,0,.5)")
       .text(function(d){return new Date(d.date).getYear() + 1900;});
 }
 
