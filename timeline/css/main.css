@@ -1,0 +1,72 @@
+html,
+body {
+  margin: 0;
+  padding: 0; }
+
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  z-index: 0; }
+
+.button {
+  background: #fff;
+  border-radius: 100%;
+  bottom: 25px;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.4);
+  color: gray;
+  height: 40px;
+  left: calc(5.5%);
+  padding: calc(3%);
+  position: fixed;
+  width: calc(10%);
+  z-index: 5; }
+  .button.prev, .button.next {
+    background: none;
+    box-shadow: none;
+    color: white;
+    font-size: 36px;
+    left: calc(27%);
+    line-height: 1;
+    text-indent: 10px; }
+  .button.next {
+    left: calc(48.5%); }
+  .button#active {
+    box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.2) inset; }
+
+.svg {
+  position: relative;
+  z-index: 2; }
+
+.text-holder {
+  background-color: rgba(0, 153, 204, 0.75);
+  bottom: 0;
+  box-shadow: 0px -110px 110px -25px rgba(0, 0, 0, 0.5) inset;
+  left: 0;
+  margin: 0;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  -webkit-transform: translate3d(0, 0, 0); }
+  .text-holder .text {
+    color: #fff;
+    font-size: 1.25em;
+    line-height: 1.25;
+    margin: 0;
+    padding: 20px;
+    position: absolute;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
+    transition: opacity 0.35s linear; }
+
+.timeline-path path {
+  fill: none;
+  stroke: black;
+  stroke-width: 3; }
+.timeline-path .tick line {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: black; }
+
+.viewer-svg {
+  z-index: 3; }
+
+/*# sourceMappingURL=main.css.map */

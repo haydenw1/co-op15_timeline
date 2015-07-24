@@ -3,26 +3,25 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=0"> <!-- sets viewport width, height, and initial scale -->
-
 		<title>SMS Timeline</title>
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400' rel='stylesheet' type='text/css'> <!-- imports main font -->
+    <link href="css/main.css" rel="stylesheet" type="text/css" >
 
-		<script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> <!-- gets d3, used for svg creations and interativity -->
+		<script src="http://d3js.org/d3.v3.min.js"></script> <!-- gets d3, used for svg creations and interativity -->
 		<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script> <!-- gets jquery, used for some scroll events -->
 		<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script> <!-- gets jquery, used for some scroll events -->
 		<script src="js/dpsHTMLGestureAPI.min.js"></script> <!-- allows interaction with DPS API -->
-
-		<link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400' rel='stylesheet' type='text/css'> <!-- imports main font -->
-		<link rel="stylesheet" type="text/css" href="main.css">
 	</head>
 	<body>
-      <script src="js/main.js"></script> <!-- main element creation and data import -->
+    <script src="js/main.js"></script> <!-- main element creation and data import -->
 
-      <div class="button nav"></div>
-      <div class="button prev">&#x21e1</div>
-      <div class="button next">&#x21e3</div>
-      <!--githubp-->
+    <div class="button nav"></div>
+    <div class="button prev">&#x21e1</div>
+    <div class="button next">&#x21e3</div>
 
-    <!-- <script src="js/touch.js"></script> taken out and included in main.js for now due to dependencies on asynchronous json import -->
-		<script src="js/api.js"></script> <!-- allows interaction with DPS API to do things like disable and toggle default app navigation...references ".button.nav"-->
+		<script src="js/api.js"></script> <!-- DPS API interaction-->
+    <script>
+      setUp();
+    </script>
 	</body>
 </html>

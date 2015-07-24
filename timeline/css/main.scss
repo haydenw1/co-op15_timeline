@@ -1,0 +1,101 @@
+$button-background-color: #fff;
+$description-font-size: 1.25em;
+$description-text-color: #fff;
+$font-stack: 'Source Sans Pro', sans-serif;
+
+@import 'reset';
+
+body {
+  font-family: $font-stack;
+  z-index: 0;
+}
+
+.button {
+  background: $button-background-color; //probably will be changed when using Olivia's buttons
+  border-radius: 100%;
+  bottom: 25px;
+  box-shadow: 0 3px 4px rgba(0,0,0,.40);
+  color: gray; //will be changed when using Olivia's buttons
+  height: 40px;
+  left: calc(5.5%);
+  padding: calc(3%); //will be changed when using Olivia's buttons
+  position: fixed;
+  width: calc(10%);
+  z-index: 5;
+
+  &.prev {
+    background: none;
+    box-shadow: none;
+    color: white; //will be changed when using Olivia's buttons
+    font-size: 36px; //will be changed when using Olivia's buttons
+    left: calc(27%);
+    line-height: 1; //will be changed when using Olivia's buttons
+    text-indent: 10px; //will be changed when using Olivia's buttons
+  }
+
+  &.next {
+    @extend .prev;
+    left: calc(48.5%);
+  }
+
+  &#active {
+    box-shadow: 0px 0px 5px 3px rgba(0,0,0,.20) inset;
+  }
+}
+
+.svg {
+  position: relative;
+  z-index: 2;
+}
+
+//Div to Hold Event Details
+// - 'fixed'              div fixed in place while user scrolls
+// - '-webkit-transform'  fixes mobile address bar (sort of) will not need in app
+.text-holder {
+  background-color: rgba(0,153,204,.75);
+  bottom: 0;
+  box-shadow: 0px -110px 110px -25px rgba(0,0,0,.50) inset;
+  left: 0;
+  margin: 0;
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  -webkit-transform: translate3d(0, 0, 0);
+
+  //Positions and Styles Event Descriptions
+  // - 'text-indent'  have to discuss, not good on small screen
+  // - 'transition'   used to ease switch between descriptions
+  .text {
+    color: $description-text-color;
+    font-size: $description-font-size;
+    line-height: 1.25;
+    margin: 0;
+    padding: 20px;
+    position: absolute;
+    //text-indent: 1em;
+    text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+    transition: opacity 0.35s linear;
+  }
+}
+
+.timeline-path {
+  path {
+    fill: none;
+    stroke: black;
+    stroke-width: 3;
+  }
+
+  .tick line {
+    fill: none;
+    shape-rendering: crispEdges;
+    stroke: black;
+  }
+}
+
+.viewer-svg {
+  z-index: 3;
+}
+
+
+
