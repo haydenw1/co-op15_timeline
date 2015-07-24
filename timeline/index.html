@@ -6,18 +6,22 @@
 		<title>SMS Timeline</title>
     <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400' rel='stylesheet' type='text/css'> <!-- imports main font -->
     <link href="main.css" rel="stylesheet" type="text/css" >
+
 		<script src="http://d3js.org/d3.v3.min.js"></script> <!-- gets d3, used for svg creations and interativity -->
 		<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script> <!-- gets jquery, used for some scroll events -->
 		<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script> <!-- gets jquery, used for some scroll events -->
 		<script src="js/dpsHTMLGestureAPI.min.js"></script> <!-- allows interaction with DPS API -->
 	</head>
 	<body>
-      <script src="js/main.js"></script> <!-- main element creation and data import -->
+    <script src="js/main.js"></script> <!-- main element creation and data import -->
 
-      <div class="button nav"></div>
-      <div class="button prev">&#x21e1</div>
-      <div class="button next">&#x21e3</div>
+    <div class="button nav"></div>
+    <div class="button prev">&#x21e1</div>
+    <div class="button next">&#x21e3</div>
 
 		<script src="js/api.js"></script> <!-- DPS API interaction-->
+    <script>
+      setUp();
+    </script>
 	</body>
 </html>

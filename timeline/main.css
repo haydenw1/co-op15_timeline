@@ -63,13 +63,13 @@ html, body{
 }
 
 .button {
-	width: 40px;
+	width: calc(10%);
 	height: 40px;
 	position: fixed;
-	padding: 15px;
+	padding: calc(3%);
 	bottom: 25px;
-	left: 15px;
-	border-radius: 35px;
+	left: calc(5.5%);
+	border-radius: 100%;
 	/*background-color: #0099CC;*/
 	background: white;
 	box-shadow: 0 3px 4px rgba(0,0,0,.40);
@@ -78,7 +78,8 @@ html, body{
 }
 
 .button.prev {
-	left: 102px;
+//	left: 102px;
+left:calc(27%);
 	/*transform: rotate(90deg);*/
 	line-height: 1;
   	text-indent: 10px;
@@ -90,7 +91,8 @@ html, body{
 }
 
 .button.next {
-	left: 190px;
+//	left: 190px;
+left: calc(48.5%);
 	/*transform: rotate(90deg);*/
 	line-height: 1;
   	text-indent: 10px;
