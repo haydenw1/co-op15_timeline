@@ -1,4 +1,4 @@
-$button-background-color: #fff;
+$button-background-color: #e84a0c;
 $description-font-size: 1.25em;
 $description-text-color: #fff;
 $font-stack: 'Source Sans Pro', sans-serif;
@@ -13,34 +13,54 @@ body {
 .button {
   background: $button-background-color; //probably will be changed when using Olivia's buttons
   border-radius: 100%;
-  bottom: 25px;
+  bottom: calc(2.5%);
   box-shadow: 0 3px 4px rgba(0,0,0,.40);
-  color: gray; //will be changed when using Olivia's buttons
-  height: 40px;
-  left: calc(5.5%);
-  padding: calc(3%); //will be changed when using Olivia's buttons
+  color: #fff; //will be changed when using Olivia's buttons
+  //height: 40px;
+  left: calc(8%);
+  padding: calc(2%); //will be changed when using Olivia's buttons
   position: fixed;
-  width: calc(10%);
+  width: calc(11%);
   z-index: 5;
+
+  img{
+    float:left;
+  }
 
   &.prev {
     background: none;
     box-shadow: none;
     color: white; //will be changed when using Olivia's buttons
     font-size: 36px; //will be changed when using Olivia's buttons
-    left: calc(27%);
+    left: calc(32.5%);
     line-height: 1; //will be changed when using Olivia's buttons
     text-indent: 10px; //will be changed when using Olivia's buttons
   }
 
   &.next {
     @extend .prev;
-    left: calc(48.5%);
+    left: calc(54%);
+  }
+
+  &.help{
+    //@extend .prev;
+    left: calc(77%);
   }
 
   &#active {
     box-shadow: 0px 0px 5px 3px rgba(0,0,0,.20) inset;
   }
+}
+
+.button-container{
+  background-color: #bbbbbc;
+  //border-top: 3px solid #e84a0c;
+  bottom: 0px;
+  //height: 5%;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 5;
 }
 
 .svg {
@@ -52,9 +72,9 @@ body {
 // - 'fixed'              div fixed in place while user scrolls
 // - '-webkit-transform'  fixes mobile address bar (sort of) will not need in app
 .text-holder {
-  background-color: rgba(0,153,204,.75);
+  background-color: #025594;
   bottom: 0;
-  box-shadow: 0px -110px 110px -25px rgba(0,0,0,.50) inset;
+  //box-shadow: 0px -110px 110px -25px rgba(0,0,0,.50) inset;
   left: 0;
   margin: 0;
   pointer-events: none;
@@ -82,14 +102,18 @@ body {
 .timeline-path {
   path {
     fill: none;
-    stroke: black;
+    stroke: #333;
     stroke-width: 3;
+  }
+
+  .tick text{
+    fill: #333;
   }
 
   .tick line {
     fill: none;
     shape-rendering: crispEdges;
-    stroke: black;
+    stroke: #333;
   }
 }
 

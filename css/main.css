@@ -8,38 +8,48 @@ body {
   z-index: 0; }
 
 .button {
-  background: #fff;
+  background: #e84a0c;
   border-radius: 100%;
-  bottom: 25px;
+  bottom: calc(2.5%);
   box-shadow: 0 3px 4px rgba(0, 0, 0, 0.4);
-  color: gray;
-  height: 40px;
-  left: calc(5.5%);
-  padding: calc(3%);
+  color: #fff;
+  left: calc(8%);
+  padding: calc(2%);
   position: fixed;
-  width: calc(10%);
+  width: calc(11%);
   z-index: 5; }
+  .button img {
+    float: left; }
   .button.prev, .button.next {
     background: none;
     box-shadow: none;
     color: white;
     font-size: 36px;
-    left: calc(27%);
+    left: calc(32.5%);
     line-height: 1;
     text-indent: 10px; }
   .button.next {
-    left: calc(48.5%); }
+    left: calc(54%); }
+  .button.help {
+    left: calc(77%); }
   .button#active {
     box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.2) inset; }
+
+.button-container {
+  background-color: #bbbbbc;
+  bottom: 0px;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 5; }
 
 .svg {
   position: relative;
   z-index: 2; }
 
 .text-holder {
-  background-color: rgba(0, 153, 204, 0.75);
+  background-color: #025594;
   bottom: 0;
-  box-shadow: 0px -110px 110px -25px rgba(0, 0, 0, 0.5) inset;
   left: 0;
   margin: 0;
   pointer-events: none;
@@ -59,12 +69,14 @@ body {
 
 .timeline-path path {
   fill: none;
-  stroke: black;
+  stroke: #333;
   stroke-width: 3; }
+.timeline-path .tick text {
+  fill: #333; }
 .timeline-path .tick line {
   fill: none;
   shape-rendering: crispEdges;
-  stroke: black; }
+  stroke: #333; }
 
 .viewer-svg {
   z-index: 3; }
