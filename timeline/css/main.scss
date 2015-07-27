@@ -1,4 +1,4 @@
-$button-background-color: #e84a0c;
+$button-background-color: #fff;
 $description-font-size: 1.25em;
 $description-text-color: #fff;
 $font-stack: 'Source Sans Pro', sans-serif;
@@ -13,19 +13,15 @@ body {
 .button {
   background: $button-background-color; //probably will be changed when using Olivia's buttons
   border-radius: 100%;
-  bottom: calc(1.5%);
+  bottom: 25px;
   box-shadow: 0 3px 4px rgba(0,0,0,.40);
-  color: #fff; //will be changed when using Olivia's buttons
-  //height: 40px;
+  color: gray; //will be changed when using Olivia's buttons
+  height: 40px;
   left: calc(5.5%);
   padding: calc(3%); //will be changed when using Olivia's buttons
   position: fixed;
   width: calc(10%);
   z-index: 5;
-
-  img{
-    float:left;
-  }
 
   &.prev {
     background: none;
@@ -47,17 +43,6 @@ body {
   }
 }
 
-.button-container{
-  background-color: #bbbbbc;
-  //border-top: 3px solid #e84a0c;
-  bottom: 0px;
-  height: 5%;
-  left: 0;
-  position: fixed;
-  width: 100%;
-  z-index: 5;
-}
-
 .svg {
   position: relative;
   z-index: 2;
@@ -67,9 +52,9 @@ body {
 // - 'fixed'              div fixed in place while user scrolls
 // - '-webkit-transform'  fixes mobile address bar (sort of) will not need in app
 .text-holder {
-  background-color: #025594;
+  background-color: rgba(0,153,204,.75);
   bottom: 0;
-  //box-shadow: 0px -110px 110px -25px rgba(0,0,0,.50) inset;
+  box-shadow: 0px -110px 110px -25px rgba(0,0,0,.50) inset;
   left: 0;
   margin: 0;
   pointer-events: none;
@@ -97,18 +82,14 @@ body {
 .timeline-path {
   path {
     fill: none;
-    stroke: #333;
+    stroke: black;
     stroke-width: 3;
-  }
-
-  .tick text{
-    fill: #333;
   }
 
   .tick line {
     fill: none;
     shape-rendering: crispEdges;
-    stroke: #333;
+    stroke: black;
   }
 }
 

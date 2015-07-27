@@ -8,18 +8,17 @@ body {
   z-index: 0; }
 
 .button {
-  background: #e84a0c;
+  background: #fff;
   border-radius: 100%;
-  bottom: calc(1.5%);
+  bottom: 25px;
   box-shadow: 0 3px 4px rgba(0, 0, 0, 0.4);
-  color: #fff;
+  color: gray;
+  height: 40px;
   left: calc(5.5%);
   padding: calc(3%);
   position: fixed;
   width: calc(10%);
   z-index: 5; }
-  .button img {
-    float: left; }
   .button.prev, .button.next {
     background: none;
     box-shadow: none;
@@ -33,22 +32,14 @@ body {
   .button#active {
     box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.2) inset; }
 
-.button-container {
-  background-color: #bbbbbc;
-  bottom: 0px;
-  height: 5%;
-  left: 0;
-  position: fixed;
-  width: 100%;
-  z-index: 5; }
-
 .svg {
   position: relative;
   z-index: 2; }
 
 .text-holder {
-  background-color: #025594;
+  background-color: rgba(0, 153, 204, 0.75);
   bottom: 0;
+  box-shadow: 0px -110px 110px -25px rgba(0, 0, 0, 0.5) inset;
   left: 0;
   margin: 0;
   pointer-events: none;
@@ -68,14 +59,12 @@ body {
 
 .timeline-path path {
   fill: none;
-  stroke: #333;
+  stroke: black;
   stroke-width: 3; }
-.timeline-path .tick text {
-  fill: #333; }
 .timeline-path .tick line {
   fill: none;
   shape-rendering: crispEdges;
-  stroke: #333; }
+  stroke: black; }
 
 .viewer-svg {
   z-index: 3; }
