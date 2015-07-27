@@ -11,20 +11,14 @@ function setUp(){
 
   var timelineXPos = width * (15.5 / 16);
 
-  console.log(textHolderWidth - (timelineXPos - rightSpace));
-
-  //var viewerOverhang = textHolderWidth - (timelineXPos - rightSpace);
-  var viewerWidth = rightSpace ;
+  var viewerWidth = rightSpace;
   var viewerHeight = viewerWidth / 3;
-
-  var viewerXPos = (timelineXPos - 1.5) - viewerWidth;
+  var viewerXPos = timelineXPos - viewerWidth;
   var viewerYPos = (height / 2) - (viewerHeight / 2);
-  var viewerOverhang = textHolderWidth - viewerXPos;
-
   var viewerBottom = viewerYPos + viewerHeight;
   var viewerTop = viewerYPos;
 
-  makeViewer(viewerHeight, viewerOverhang, viewerWidth, viewerXPos, viewerYPos);
+  makeViewer(viewerHeight, viewerWidth, viewerXPos, viewerYPos);
   makeTextHolder(height, textHolderWidth);
 
   //array of objects for each school event. holds a description ("event"), a date ("date"), and an associated picture ("pic")
@@ -58,7 +52,6 @@ function setUp(){
       }
     ];
 
-    //console.log(document.body.innerHeight);
     var totalHeight = document.documentElement.clientHeight * (data.length/2.5);
     var earliest = new Date(data[0].date);
     var latest = new Date(data[(data.length)-1].date);
@@ -69,57 +62,45 @@ function setUp(){
   //});
 }
 
-function makeViewer(height, overHang, width, xPos, yPos){
+function makeViewer(h, w, x, y){
   var viewerLineData = [
     { "x": 0, "y": 0},
-    { "x": width * (5 / 6), "y": 0},
-    { "x": width, "y": height/2},
-    { "x": width * (5 / 6), "y": height},
-    { "x": 0, "y": height},
+    { "x": w * (3 / 4), "y": 0},
+    { "x": w, "y": h/2},
+    { "x": w * (3 / 4), "y": h},
+    { "x": 0, "y": h},
     { "x": 0, "y": 0}
   ];
-
-  var viewerBackLineData = [
-    { "x": 0, "y": height},
-    { "x": overHang, "y": height},
-    { "x": overHang, "y": height + overHang}
-    //{ "x": overHang, "y": height + overHang}
-  ]
 
   var viewerLine = d3.svg.line()
     .x(function(d){ return d.x;})
     .y(function(d){ return d.y;})
     .interpolate("linear");
 
-  var viewerSvg = d3.select("body")
+  d3.select( "body" )
     .append("svg")
       .attr("class","viewer-svg")
-      .attr("width", width)
-      .attr("height", height + overHang)
+      .attr("width", w)
+      .attr("height", h)
       .attr("fill","black")
       .style("position", "fixed")
-      .style("left", xPos)
-      .style("top", yPos)
-
-  viewerSvg.append("path")
-    .attr("d", viewerLine(viewerLineData))
-    .attr("stroke-width","0px")
-    .attr("fill","#e84a0c");
-
-  viewerSvg.append("path")
-    .attr("d", viewerLine(viewerBackLineData))
-    .attr("stroke-width","0px")
-    .attr("fill","#333333");
+      .style("left", x)
+      .style("top", y)
+    .append("path")
+      .attr("d",viewerLine(viewerLineData))
+      //.attr("stroke","#9F6FE8")
+      .attr("stroke-width","0px")
+      .attr("fill","#9F6FE8");
 }
 
 //creates single div to hold event text and pics, appends to DOM
-function makeTextHolder(height, width){
+function makeTextHolder(h, w){
   var textHolder = document.createElement("div");
   var para = document.createElement("p");
 
   textHolder.setAttribute("class","text-holder");
-  textHolder.style.width = width + "px";
-  textHolder.style.height = height + "px";
+  textHolder.style.width = w + "px";
+  textHolder.style.height = h + "px";
 
   para.setAttribute("class","text");
   para.setAttribute("id","p");
@@ -169,9 +150,9 @@ function makeSvgAndTimeline(circleRadius, data, earliest, height, latest, p, rig
       .attr("cx", timelineX) //sets x position of circle
       .attr("cy", function(d){return d3.round(yScale(new Date(d.date)));}) //sets y position (based on date of object in data)
       .attr("r", circleRadius)
-      .attr("stroke", "#fff")
+      .attr("stroke", "#0099CC")
       .attr("stroke-width", 1)
-      .attr("fill", "#bbbbbc");
+      .attr("fill", "#0099CC");
 
   for(var i = 0; i < circles[0].length; i++){
     circleCY.push(parseInt(circles[0][i].getAttribute("cy")));
@@ -207,14 +188,10 @@ function isScrolledIntoView(circleCY, circleRadius, circles, data, viewerBottom,
     if(elementCenter >= viewerTop && elementCenter <= viewerBottom){
       d3Circle.transition()
         .ease("elastic")
-        .attr("r", circleRadius * 2.38)
-        .attr("fill","#00adee");
+        .attr("r", circleRadius * 2.38);
       showTP(data, i, viewerHeight, viewerWidth);
     }else{
-      d3Circle.transition()
-        .ease("elastic")
-        .attr("r", circleRadius)
-        .attr("fill","#bbbbbc");
+      d3Circle.transition().ease("elastic").attr("r", circleRadius);
       badCounter === data.length - 1 ? hideTP() : false; //***checks to see if all circles are out of bounds
       badCounter++;
     }
@@ -268,14 +245,6 @@ function createButtons(circleCY, circles, height, viewerBottom, viewerTop){
   var buttonNext = d3.select(".button.next");
   var buttonPrev = d3.select(".button.prev");
   var buttonNavWidth = buttonNav.style("width");
-
-  console.log($( ".button img" ).innerWidth());
-  $( ".button img" ).innerWidth(buttonNavWidth);
-  console.log($( ".button img" ).innerWidth());
-  console.log(buttonNavWidth);
-  $( ".button-container" ).css("height", "calc(6% + " + buttonNavWidth + ")");
-
-  //console.log($(".button.nav").css(left));
 
   buttonNav.style("height", buttonNavWidth);
   buttonPrev.style("height", buttonNavWidth);
