@@ -1,4 +1,339 @@
-//set width/height/padding variables for use...height of timeline determined with "totalHeight"
+var timeline = {
+
+  d3tools: {},
+  elements: {},
+  measurements: {},
+  viewer: {},
+
+
+
+  setUp: function(){
+    var tM = timeline.measurements; // local var to make property assignments of general measurements more readable
+    var tV = timeline.viewer; // local var to make property assignments of viewer measurements more readable
+
+    tM.width = document.documentElement.clientWidth;
+    tM.height = document.documentElement.clientHeight;
+    tM.padding = document.documentElement.clientHeight/2;
+    tM.textHolderWidth = tM.width * 0.7;
+    tM.rightSpace = tM.width - (tM.width * 0.7);
+    tM.circleRadius = tM.rightSpace * (7 / 120);
+    tM.timelineXPos = tM.width * (15.5 / 16);
+
+    tV.width = tM.rightSpace;
+    tV.height = tV.width / 3;
+    tV.xPos = (tM.timelineXPos - 1.5) - tM.width;
+    tV.yPos = (tM.height / 2) - (tV.height / 2);
+    tV.overhang = tM.textHolderWidth - tV.xPos;
+    tV.bottom = tV.yPos + tV.height;
+    tV.top = tV.yPos;
+
+    timeline.makeViewer();
+    timeline.makeTextHolder();
+
+    timeline.useData();
+
+    timeline.bindEventsAndCall();
+    timeline.onReady();
+  },
+
+
+
+  makeViewer: function(){
+    var height = timeline.viewer.height;
+    var overHang = timeline.viewer.overHang;
+    var width = timeline.viewer.width;
+    var xPos = timeline.viewer.xPos;
+    var yPos = timeline.viewer.yPos;
+
+    var viewerLineData = [
+      { "x": 0, "y": 0},
+      { "x": width * (5 / 6), "y": 0},
+      { "x": width, "y": height/2},
+      { "x": width * (5 / 6), "y": height},
+      { "x": 0, "y": height},
+      { "x": 0, "y": 0}
+    ];
+
+    var viewerBackLineData = [
+      { "x": 0, "y": height},
+      { "x": overHang, "y": height},
+      { "x": overHang, "y": height + overHang}
+    ]
+
+    var viewerLine = d3.svg.line()
+      .x(function(d){ return d.x;})
+      .y(function(d){ return d.y;})
+      .interpolate("linear");
+
+    var viewerSvg = d3.select("body")
+      .append("svg")
+        .attr("class","viewer-svg")
+        .attr("width", width)
+        .attr("height", height + overHang)
+        .attr("fill","black")
+        .style("position", "fixed")
+        .style("left", xPos)
+        .style("top", yPos)
+
+    viewerSvg.append("path")
+      .attr("d", viewerLine(viewerLineData))
+      .attr("stroke-width","0px")
+      .attr("fill","#e84a0c");
+
+    viewerSvg.append("path")
+      .attr("d", viewerLine(viewerBackLineData))
+      .attr("stroke-width","0px")
+      .attr("fill","#333333");
+  },
+
+
+  //creates single div to hold event text and pics, appends to DOM
+  makeTextHolder: function(){
+    var height = timeline.measurements.height;
+    var width = timeline.measurements.textHolderWidth;
+    var textHolder = document.createElement("div");
+    var para = document.createElement("p");
+
+    textHolder.setAttribute("class","text-holder");
+    textHolder.style.width = width + "px";
+    textHolder.style.height = height + "px";
+
+    para.setAttribute("class","text");
+    para.setAttribute("id","p");
+    para.style.opacity = 0; //default state is hidden until user interacts with page
+
+    textHolder.appendChild(para);//append para <p> to holder div
+    document.body.appendChild(textHolder);//append holder div to body element
+  },
+
+
+
+  useData: function(){
+    var data = timeline.data;
+
+    timeline.measurements.totalHeight = document.documentElement.clientHeight * (data.length / 2.5);
+    timeline.measurements.earliest = new Date(data[0].date);
+    timeline.measurements.latest = new Date(data[(data.length) - 1].date);
+
+    timeline.makeSvgAndTimeline();
+  },
+
+
+  //function makeSvgAndTimeline(circleRadius, data, earliest, height, latest, p, rightSpace, timelineX, totalH, viewerBottom, viewerHeight, viewerTop, viewerWidth, w){
+  makeSvg: function(){
+    //var circleRadius = timeline.measurements.circleRadius;
+    //var data = timeline.data;
+
+    //var timelineX = timeline.measurements.timelineXPos;
+    var totalHeight = timeline.measurements.totalHeight;
+    var width = timeline.measurements.width;
+
+    //d3, svg element which is the size of the body that holds all generates svg
+    timeline.elements.svg = d3.select("body")
+      .append("svg")
+        .attr("class","svg")
+        .attr("width", width)
+        .attr("height", totalHeight);
+
+    timeline.makeTimeline();
+  },
+
+
+
+  makeTimeline: function(){
+    var circleRadius = timeline.measurements.circleRadius;
+    var earliest = timeline.measurements.earliest;
+    var latest = timeline.measurements.latest;
+    var padding = timeline.measurements.padding;
+    var svg = timeline.elements.svg;
+    var tickSize = timeline.measurements.rightSpace;
+    var timelineX = timeline.measurements.timelineXPos;
+
+    //d3, time scale for year event placement on timeline
+    var yScale = timeline.d3tools.yScale = d3.time.scale()
+      .domain([earliest, latest])
+      .range([padding, totalHeight - padding]);
+
+    var yScaleSideAxis = timeline.d3tools.yScaleSideAxis = d3.svg.axis()
+      .scale(yScale)
+      .orient("left")
+      .ticks(d3.time.years, 1)
+      .innerTickSize(tickSize / 5);
+
+    svg.append("g")                   //creates and appends the main 'timeline' line
+      .attr("class","timeline-path")
+      .style("transform", "translate(" + timelineX + "px,0px)")
+      .call(yScaleSideAxis);
+
+    d3.selectAll(".tick text")
+      .style("font-size", circleRadius * 2.5);
+
+    timeline.makeCircles();
+  },
+
+
+
+  makeCircles: function(){
+    var circleCY = timeline.measurements.circleCY = [];
+    var circleRadius = timeline.measurements.circleRadius;
+    var data = timeline.data;
+    var svg = timeline.elements.svg;
+    var timelineX = timeline.measurements.timelineXPos;
+    var yScale = timeline.d3tools.yScale;
+
+    var circles = timeline.elements.circles = svg
+      .append("g") //group to hold all circles
+        .selectAll(".circle")
+        .data(data) //binds data (above) to elements
+        .enter()
+      .append("circle") //creates circle for every object in data array
+        .attr("class", "circle")
+        .attr("cx", timelineX) //sets x position of circle
+        .attr("cy", function(d){return d3.round(yScale(new Date(d.date)));}) //sets y position (based on date of object in data)
+        .attr("r", circleRadius)
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1)
+        .attr("fill", "#bbbbbc");
+
+    for(var i = 0; i < circles[0].length; i++){
+      circleCY.push(parseInt(circles[0][i].getAttribute("cy")));
+    }
+  },
+
+
+
+  bindEventsAndCall: function(){
+    // binds listener to html element that is looking for movement (scrolling with finger)
+    d3.select("html").on("touchmove",function(){
+      timeline.isScrolledIntoView();
+    });
+
+    timeline.isScrolledIntoView();
+  },
+
+
+
+  onReady: function(){
+    $( document ).ready(function(){
+      createButtons();
+      timeline.createTimelineButtons();
+      setInterval(function(){
+        timeline.isScrolledIntoView();
+      }, 250); //starts reoccuring, time-delayed function (above)
+    });
+  },
+
+
+  //function isScrolledIntoView(circleCY, circleRadius, circles, data, viewerBottom, viewerHeight, viewerTop, viewerWidth){
+  isScrolledIntoView: function(){
+    var circleCY = timeline.measurements.circleCY;
+    var circleRadius = timeline.measurements.circleRadius;
+    var circles = timeline.elements.circles;
+    var data = timeline.data;
+    var viewerBottom = timeline.viewer.bottom;
+    var viewerHeight = timeline.viewer.height;
+    var viewerTop = timeline.viewer.top;
+    var viewerWidth = timeline.viewer.width;
+
+    var badCounter = 0;                         //counter to see if all circle elements are out of bounds
+    var bodyScroll = $( "body" ).scrollTop();   //jquery, how far page has been scrolled
+    var d3Circle;
+    var element;
+    var elementCenter;                          //circle element being checked
+
+    for(var i = 0; i < circles[0].length; i++){
+      element = circles[0][i];
+      d3Circle = d3.select(element);
+      elementCenter = circleCY[i] - bodyScroll;
+
+      if(elementCenter >= viewerTop && elementCenter <= viewerBottom){
+        d3Circle.transition()
+          .ease("elastic")
+          .attr("r", circleRadius * 2.38)
+          .attr("fill","#00adee");
+        showTP(i);
+      }else{
+        d3Circle.transition()
+          .ease("elastic")
+          .attr("r", circleRadius)
+          .attr("fill","#bbbbbc");
+
+        if(badCounter === data.length - 1){
+          hideTP();
+        }
+
+        badCounter++;
+      }
+    }
+  }
+
+
+
+  showTP: function(pos){
+    var data = timeline.data;
+    var textElement = d3.select("#p"), textElement = textElement[0][0];
+    var textObject = data[pos].description;
+    var viewerHeight = timeline.viewer.height;
+    var viewerWidth = timeline.viewer.width;
+
+    textElement.innerHTML = textObject;
+    textElement.style.opacity = 1;
+
+    makeYearText(data, pos, viewerHeight, viewerWidth);
+  }
+
+
+  //selects correspoinding DOM text and picture objects using passed position and hides them
+  hideTP: function(){
+    var textElement = d3.select("#p"), textElement = textElement[0][0];
+
+    if(textElement){
+      textElement.style.opacity = 0;
+
+      deleteYearText();
+    }
+  }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//  Keep going below this point HAYDEN.
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+//////
+
+
+    //creates circle for every data point and g to enclose them all
+
+
+    //isScrolledIntoView(circleCY, circleRadius, circles, data, viewerBottom, viewerHeight, viewerTop, viewerWidth);
+
+
+
+  }
+
+}
+
+
 function setUp(){
   var width = document.documentElement.clientWidth;
   var height = document.documentElement.clientHeight;
@@ -32,175 +367,175 @@ function setUp(){
   //  if(error) return console.log(error);
 
     //sample data for local testing
-    var data = [
-  {
-    "description":"Mark Ellingson, President of the Rochester Athenaeum & Mechanics Institute (RAMI) takes over the Empire State School of Printing located in Ithaca, New York, and it becomes a two-year program.",
-    "date":"1/1/1937",
-    "pic":"cias.jpg"
-  },
+  data : [
+    {
+      "description":"Mark Ellingson, President of the Rochester Athenaeum & Mechanics Institute (RAMI) takes over the Empire State School of Printing located in Ithaca, New York, and it becomes a two-year program.",
+      "date":"1/1/1937",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"20 freshman enroll in the program with the first major printing project by the department being the student newspaper, PSIMAR.",
-    "date":"1/1/1938",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"20 freshman enroll in the program with the first major printing project by the department being the student newspaper, PSIMAR.",
+      "date":"1/1/1938",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Students take over the editorial page of the Democrat and Chronicle for one issue.",
-    "date":"1/1/1939",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Students take over the editorial page of the Democrat and Chronicle for one issue.",
+      "date":"1/1/1939",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Rochester Athenaeum & Mechanics Institute becomes Rochester Institute of Technology.",
-    "date":"1/1/1944",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Rochester Athenaeum & Mechanics Institute becomes Rochester Institute of Technology.",
+      "date":"1/1/1944",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"SPM moves into Clark Building with enrollment dramatically increasing to 136 due to the end of WWII.",
-    "date":"1/1/1946",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"SPM moves into Clark Building with enrollment dramatically increasing to 136 due to the end of WWII.",
+      "date":"1/1/1946",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"First 4-color illustration appears in Student Publication, Rochester Institute of Technology (SPRIT)",
-    "date":"1/1/1947",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"First 4-color illustration appears in Student Publication, Rochester Institute of Technology (SPRIT)",
+      "date":"1/1/1947",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"RIT and the Lithographic Technical Foundation sponsor a Web Offset Conference and propose a new web press purchase for the school. Gannett Company donates a Teletypesetter system to the School of Printing.",
-    "date":"1/1/1948",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"RIT and the Lithographic Technical Foundation sponsor a Web Offset Conference and propose a new web press purchase for the school. Gannett Company donates a Teletypesetter system to the School of Printing.",
+      "date":"1/1/1948",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"SPRIT changes its name to RIT Reporter.",
-    "date":"1/1/1951",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"SPRIT changes its name to RIT Reporter.",
+      "date":"1/1/1951",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"One-third of seniors major in offset lithography; two-thirds major in letterpress printing. Frank Gannett is presented the prestigious Founders Award for his service to the Institute.",
-    "date":"1/1/1952",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"One-third of seniors major in offset lithography; two-thirds major in letterpress printing. Frank Gannett is presented the prestigious Founders Award for his service to the Institute.",
+      "date":"1/1/1952",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Ellen Eggleton becomes the first woman to receive an Associate of Applied from the School of Printing.",
-    "date":"1/1/1953",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Ellen Eggleton becomes the first woman to receive an Associate of Applied from the School of Printing.",
+      "date":"1/1/1953",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Printing students Carl Nelson and Arthur Borock convince the Athletic Board to adopt the tiger emblem to represent RIT sports.",
-    "date":"1/1/1955",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Printing students Carl Nelson and Arthur Borock convince the Athletic Board to adopt the tiger emblem to represent RIT sports.",
+      "date":"1/1/1955",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"A section of the Hand Composition Laboratory is dedicated in memoriam to prominent typography, Frederic W. Goudy.",
-    "date":"1/1/1961",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"A section of the Hand Composition Laboratory is dedicated in memoriam to prominent typography, Frederic W. Goudy.",
+      "date":"1/1/1961",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Flexography and gravure printing become part of the curriculum.",
-    "date":"1/1/1965",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Flexography and gravure printing become part of the curriculum.",
+      "date":"1/1/1965",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"New Goss C-38 publication press is installed on the campus.",
-    "date":"1/1/1967",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"New Goss C-38 publication press is installed on the campus.",
+      "date":"1/1/1967",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Melbert B. Cary Jr., Graphic Arts Collection is donated, housing historical and current examples of “fine” printing.",
-    "date":"1/1/1969",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Melbert B. Cary Jr., Graphic Arts Collection is donated, housing historical and current examples of “fine” printing.",
+      "date":"1/1/1969",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"250 freshman enter the program making the total number enrolled an impressive 661 students. MBO folding machine for bindery is donated. Now all major printing processes are represented with up-to-date equipment.",
-    "date":"1/1/1977",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"250 freshman enter the program making the total number enrolled an impressive 661 students. MBO folding machine for bindery is donated. Now all major printing processes are represented with up-to-date equipment.",
+      "date":"1/1/1977",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"150th Anniversary of RIT",
-    "date":"1/1/1978",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"150th Anniversary of RIT",
+      "date":"1/1/1978",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Renovation and rededication of the Cary Graphic Arts Collection is finished.",
-    "date":"1/1/1979",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Renovation and rededication of the Cary Graphic Arts Collection is finished.",
+      "date":"1/1/1979",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Labs are updated with $4.2 million in computer equipment.",
-    "date":"1/1/1982",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Labs are updated with $4.2 million in computer equipment.",
+      "date":"1/1/1982",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"A SCR-40 Scanning densitometer, a Linotype/Paul scanner, and a Compugraphics typesetter are donated.",
-    "date":"1/1/1983",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"A SCR-40 Scanning densitometer, a Linotype/Paul scanner, and a Compugraphics typesetter are donated.",
+      "date":"1/1/1983",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Cary Library no longer has a “look but don’t touch” policy and is open for use.",
-    "date":"1/1/1984",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Cary Library no longer has a “look but don’t touch” policy and is open for use.",
+      "date":"1/1/1984",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"The newspaper production lab that supported the degree program, News Paper Operations Management, begins using a digital page layout system.",
-    "date":"1/1/1996",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"The newspaper production lab that supported the degree program, News Paper Operations Management, begins using a digital page layout system.",
+      "date":"1/1/1996",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"New Media courses are first offered as part of SPM curriculum.",
-    "date":"1/1/1997",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"New Media courses are first offered as part of SPM curriculum.",
+      "date":"1/1/1997",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"The Digital Publishing Center is established, printing student work at RIT.",
-    "date":"1/1/1998",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"The Digital Publishing Center is established, printing student work at RIT.",
+      "date":"1/1/1998",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"RIT is selected by the Alfred P. Sloan Foundation to become one of twenty-six Sloan Industry Centers. This center is dedicated to studying major business environment influences in the printing industry.",
-    "date":"1/1/2001",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"RIT is selected by the Alfred P. Sloan Foundation to become one of twenty-six Sloan Industry Centers. This center is dedicated to studying major business environment influences in the printing industry.",
+      "date":"1/1/2001",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"The Printing Applications Lab at RIT is donated a Sunday 2000 press.",
-    "date":"1/1/2005",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"The Printing Applications Lab at RIT is donated a Sunday 2000 press.",
+      "date":"1/1/2005",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"Open Publishing Lab is founded, researching new methods of content creation and developing open source applications for publishing across various media.",
-    "date":"1/1/2007",
-    "pic":"cias.jpg"
-  },
+    {
+      "description":"Open Publishing Lab is founded, researching new methods of content creation and developing open source applications for publishing across various media.",
+      "date":"1/1/2007",
+      "pic":"cias.jpg"
+    },
 
-  {
-    "description":"75th Anniversary of the School of Print Media.",
-    "date":"1/1/2012",
-    "pic":"cias.jpg"
-  }
-];
+    {
+      "description":"75th Anniversary of the School of Print Media.",
+      "date":"1/1/2012",
+      "pic":"cias.jpg"
+    }
+  ];
 
     //console.log(document.body.innerHeight);
     var totalHeight = document.documentElement.clientHeight * (data.length/2.5);
