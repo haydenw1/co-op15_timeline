@@ -329,7 +329,8 @@ function makeSvgAndTimeline(circleRadius, data, earliest, height, latest, p, rig
   });
 
   $( document ).ready(function(){
-    createButtons(circleCY, circles, height, viewerBottom, viewerTop);
+    createButtons();
+    createTimelineButtons(circleCY, circles, height, viewerBottom, viewerTop);
     setInterval(function(){
       isScrolledIntoView(circleCY, circleRadius, circles, data, viewerBottom, viewerHeight, viewerTop, viewerWidth)
     },250); //starts reoccuring, time-delayed function (above)
@@ -407,11 +408,11 @@ function deleteYearText(){
     .remove();
 }
 
-function createButtons(circleCY, circles, height, viewerBottom, viewerTop){
+function createTimelineButtons(circleCY, circles, height, viewerBottom, viewerTop){
   var buttonNav = d3.select(".button.nav"); //button that shows nav
   var buttonNext = d3.select(".button.next");
   var buttonPrev = d3.select(".button.prev");
-  var buttonHelp = d3.select(".button.help");
+  //var buttonHelp = d3.select(".button.help");
   var buttonNavWidth = buttonNav.style("width");
 
   //console.log($( ".button" ).width());
@@ -424,13 +425,13 @@ function createButtons(circleCY, circles, height, viewerBottom, viewerTop){
 
   //console.log($(".button.nav").css(left));
 
-  buttonNav.style("height", buttonNavWidth);
+  //buttonNav.style("height", buttonNavWidth);
   buttonPrev.style("height", buttonNavWidth);
   buttonNext.style("height", buttonNavWidth);
-  buttonHelp.style("height", buttonNavWidth);
+  //buttonHelp.style("height", buttonNavWidth);
 
-  buttonNav.on("touchstart", function(){d3.select(this).attr("id", "active");})
-           .on("touchend",   function(){d3.select(this).attr("id", null);});
+  //buttonNav.on("touchstart", function(){d3.select(this).attr("id", "active");})
+  //         .on("touchend",   function(){d3.select(this).attr("id", null);});
 
   buttonPrev.on("touchstart", function(){goPrevNext(this, circleCY, circles, height, 0, viewerBottom, viewerTop)})
             .on("touchend",   function(){d3.select(this).attr("id", null);});
@@ -438,8 +439,8 @@ function createButtons(circleCY, circles, height, viewerBottom, viewerTop){
   buttonNext.on("touchstart", function(){goPrevNext(this, circleCY, circles, height, 1, viewerBottom, viewerTop)})
             .on("touchend",   function(){d3.select(this).attr("id", null);});
 
-  buttonHelp.on("touchstart", function(){d3.select(this).attr("id", "active");})
-            .on("touchend",   function(){d3.select(this).attr("id", null);});
+  //buttonHelp.on("touchstart", function(){d3.select(this).attr("id", "active");})
+  //          .on("touchend",   function(){d3.select(this).attr("id", null);});
 }
 
 function goPrevNext(button, circleCY, circles, height, direction, viewerBottom, viewerTop){

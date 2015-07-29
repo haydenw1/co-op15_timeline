@@ -4,63 +4,26 @@ $description-text-color: #fff;
 $font-stack: 'Source Sans Pro', sans-serif;
 
 @import 'reset';
+@import 'buttons';
 
 body {
   font-family: $font-stack;
   z-index: 0;
 }
 
-.button {
-  background: $button-background-color; //probably will be changed when using Olivia's buttons
-  border-radius: 100%;
-  bottom: calc(2.5%);
-  box-shadow: 0 3px 4px rgba(0,0,0,.40);
-  color: #fff; //will be changed when using Olivia's buttons
-  //height: 40px;
-  left: calc(8%);
-  padding: calc(2%); //will be changed when using Olivia's buttons
-  position: fixed;
-  width: calc(11%);
-  z-index: 5;
-
-  img{
-    float:left;
-  }
-
-  &.prev {
-    background: none;
-    box-shadow: none;
-    color: white; //will be changed when using Olivia's buttons
-    font-size: 36px; //will be changed when using Olivia's buttons
-    left: calc(32.5%);
-    line-height: 1; //will be changed when using Olivia's buttons
-    text-indent: 10px; //will be changed when using Olivia's buttons
-  }
-
-  &.next {
-    @extend .prev;
-    left: calc(54%);
-  }
-
-  &.help{
-    //@extend .prev;
-    left: calc(77%);
-  }
-
-  &#active {
-    box-shadow: 0px 0px 5px 3px rgba(0,0,0,.20) inset;
-  }
+.button.prev {
+  background: none;
+  box-shadow: none;
+  color: white; //will be changed when using Olivia's buttons
+  font-size: 36px; //will be changed when using Olivia's buttons
+  left: calc(32.5%);
+  line-height: 1; //will be changed when using Olivia's buttons
+  text-indent: 10px; //will be changed when using Olivia's buttons
 }
 
-.button-container{
-  background-color: #bbbbbc;
-  //border-top: 3px solid #e84a0c;
-  bottom: 0px;
-  //height: 5%;
-  left: 0;
-  position: fixed;
-  width: 100%;
-  z-index: 5;
+.button.next {
+  @extend .prev;
+  left: calc(54%);
 }
 
 .svg {
