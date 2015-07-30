@@ -32,8 +32,6 @@ body {
 }
 
 //Div to Hold Event Details
-// - 'fixed'              div fixed in place while user scrolls
-// - '-webkit-transform'  fixes mobile address bar (sort of) will not need in app
 .text-holder {
   background-color: #025594;
   bottom: 0;
@@ -47,8 +45,6 @@ body {
   -webkit-transform: translate3d(0, 0, 0);
 
   //Positions and Styles Event Descriptions
-  // - 'text-indent'  have to discuss, not good on small screen
-  // - 'transition'   used to ease switch between descriptions
   .text {
     color: $description-text-color;
     font-size: $description-font-size;
@@ -83,6 +79,3 @@ body {
 .viewer-svg {
   z-index: 3;
 }
-
-
-

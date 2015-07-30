@@ -5,9 +5,6 @@ function createButtons(){
 
   $( ".button img" ).innerWidth(buttonNavWidth);
 
-  console.log(document.getElementsByClassName("button")[0].getBoundingClientRect().width);
-
-
   buttonNav.style("height", buttonNavWidth);
   buttonHelp.style("height", buttonNavWidth);
 

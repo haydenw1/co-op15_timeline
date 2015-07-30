@@ -4,35 +4,22 @@ $button-background-color: #e84a0c;
   background: $button-background-color; //probably will be changed when using Olivia's buttons
   border-radius: 100%;
   bottom: calc(2.5%);
-  box-shadow: 0 3px 4px rgba(0,0,0,.40);
-  color: #fff; //will be changed when using Olivia's buttons
+  color: #fff;                          //will be changed when using Olivia's buttons
   left: calc(8%);
-  padding: calc(2%); //will be changed when using Olivia's buttons
+  padding: calc(2%);                    //will be changed when using Olivia's buttons
   position: fixed;
   width: calc(11%);
   z-index: 5;
 
   img{
-    float:left;
+    float:left; //will be changed when using Olivia's buttons
   }
 
   &.help{
-    //@extend .prev;
-    left: calc(77%);
+    left: calc(77%); //position of help button at current width percentage
   }
 
   &#active {
-    box-shadow: 0px 0px 5px 3px rgba(0,0,0,.20) inset;
+    background: #333; //background change on touch event
   }
-}
-
-.button-container{
-  background-color: #bbbbbc;
-  //border-top: 3px solid #e84a0c;
-  bottom: 0px;
-  //height: 5%;
-  left: 0;
-  position: fixed;
-  width: 100%;
-  z-index: 5;
 }

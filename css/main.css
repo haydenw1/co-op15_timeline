@@ -3,15 +3,10 @@ body {
   margin: 0;
   padding: 0; }
 
-body {
-  font-family: "Source Sans Pro", sans-serif;
-  z-index: 0; }
-
 .button {
   background: #e84a0c;
   border-radius: 100%;
   bottom: calc(2.5%);
-  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.4);
   color: #fff;
   left: calc(8%);
   padding: calc(2%);
@@ -20,28 +15,26 @@ body {
   z-index: 5; }
   .button img {
     float: left; }
-  .button.prev, .button.next {
-    background: none;
-    box-shadow: none;
-    color: white;
-    font-size: 36px;
-    left: calc(32.5%);
-    line-height: 1;
-    text-indent: 10px; }
-  .button.next {
-    left: calc(54%); }
   .button.help {
     left: calc(77%); }
   .button#active {
-    box-shadow: 0px 0px 5px 3px rgba(0, 0, 0, 0.2) inset; }
+    background: #333; }
 
-.button-container {
-  background-color: #bbbbbc;
-  bottom: 0px;
-  left: 0;
-  position: fixed;
-  width: 100%;
-  z-index: 5; }
+body {
+  font-family: "Source Sans Pro", sans-serif;
+  z-index: 0; }
+
+.button.prev, .button.next {
+  background: none;
+  box-shadow: none;
+  color: white;
+  font-size: 36px;
+  left: calc(32.5%);
+  line-height: 1;
+  text-indent: 10px; }
+
+.button.next {
+  left: calc(54%); }
 
 .svg {
   position: relative;
