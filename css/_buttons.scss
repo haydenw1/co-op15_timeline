@@ -1,7 +1,7 @@
-$button-background-color: #e84a0c;
+$button-background-color: #666;
 
 .button {
-  background: $button-background-color; //probably will be changed when using Olivia's buttons
+  background-color: $button-background-color; //probably will be changed when using Olivia's buttons
   border-radius: 100%;
   bottom: calc(2.5%);
   color: #fff;                          //will be changed when using Olivia's buttons
@@ -13,6 +13,12 @@ $button-background-color: #e84a0c;
 
   img{
     float:left; //will be changed when using Olivia's buttons
+  }
+
+  &.description{
+    bottom: calc(50%);
+    left: calc(44%);
+    transition: bottom 1s, left 1s, height 1s, width 1s;
   }
 
   &.help{

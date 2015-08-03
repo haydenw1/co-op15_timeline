@@ -23,7 +23,7 @@ var api = {
       //binds event listener to my button element
       $buttonNav.attr( "onclick", "api.toggleNavUi();" );
     });
-  }
+  },
 
 
 

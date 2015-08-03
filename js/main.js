@@ -26,6 +26,7 @@ var timeline = {
    *   index.html
    *
    * +calls:
+   *   buttons.createButtons,
    *   timeline.makeViewer,
    *   timeline.makeTextHolder,
    *   timeline.useData,
@@ -56,6 +57,8 @@ var timeline = {
     timeline.makeTextHolder();
 
     timeline.useData();
+
+    buttons.createButtons();
 
     timeline.bindEventsAndCall();
     timeline.onReady();
@@ -466,17 +469,15 @@ var timeline = {
    *   timeline.setUp
    *
    * +calls
-   *   buttons.createButtons
    *   timeline.createTimelineButtons
    *   timeline.isScrolledIntoView
    */
   onReady: function(){
     $( document ).ready(function(){
-      createButtons();
-      timeline.createTimelineButtons();
-      setInterval(function(){           //starts reoccuring, time-delayed function call
-        timeline.isScrolledIntoView();
-      }, 250);                          //time between reoccuring calls
+        timeline.createTimelineButtons();
+        setInterval(function(){           //starts reoccuring, time-delayed function call
+          timeline.isScrolledIntoView();
+        }, 250);                          //time between reoccuring calls
     });
   },
 
