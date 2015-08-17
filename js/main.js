@@ -5,11 +5,11 @@ var timeline = {
   d3tools: {},
 
   //An object that stores DOM elements that are used between functions
-  elements: {},
+  elem: {},
 
-  //An object that stores dimensions and coordinates that functions use to
-  //positions and resize elements dynamically based on screen size of device
-  measurements: {},
+  //An object that stores measurements, dimensions, and coordinates that functions
+  //use to position and resize elements dynamically based on screen size of device
+  meas: {},
 
   //A specific object to hold dimensions and positioning values of the polygon
   //'viewer', seperated from the measurements object due to its unique amount
@@ -21,21 +21,10 @@ var timeline = {
   /**
    * setUp
    *   file to start constructions of the timeline elements
-   *
-   * -called by:
-   *   index.html
-   *
-   * +calls:
-   *   buttons.createButtons,
-   *   timeline.makeViewer,
-   *   timeline.makeTextHolder,
-   *   timeline.useData,
-   *   timeline.bindEventsAndCall,
-   *   timeline.onReady
    */
   setUp: function(){
-    var tM = timeline.measurements; // var to make property assignments of the measurements object more readable
-    var tV = timeline.viewer;       // var to make property assignments of the viewer object more readable
+    var tM = timeline.meas; // var to make property assignments of the measurements object more readable
+    var tV = timeline.viewer; // var to make property assignments of the viewer object more readable
 
     tM.width = document.documentElement.clientWidth;
     tM.height = document.documentElement.clientHeight;
@@ -55,11 +44,8 @@ var timeline = {
 
     timeline.makeViewer();
     timeline.makeTextHolder();
-
     timeline.useData();
-
     buttons.createButtons();
-
     timeline.bindEventsAndCall();
     timeline.onReady();
   },
@@ -70,9 +56,6 @@ var timeline = {
    * makeViewer
    *   Constructs the viewer svg that gets filled in with the year of events when
    *   they are navigated to on the timeline.
-   *
-   * -called by:
-   *   timeline.setUp
    */
   makeViewer: function(){
     var height = timeline.viewer.height;
@@ -81,7 +64,8 @@ var timeline = {
     var xPos = timeline.viewer.xPos;
     var yPos = timeline.viewer.yPos;
 
-    var viewerLineData = [                   //coordinate points to construct viewer path
+    //coordinate points to construct viewer path
+    var viewerLineData = [
       { "x": 0, "y": 0},
       { "x": width * (5 / 6), "y": 0},
       { "x": width, "y": height/2},
@@ -90,7 +74,8 @@ var timeline = {
       { "x": 0, "y": 0}
     ];
 
-    var viewerBackLineData = [                 //coordinate points to construct small addition path for style purposes
+    //coordinate points to construct small addition path for style purposes
+    var viewerBackLineData = [
       { "x": 0, "y": height},
       { "x": overhang, "y": height},
       { "x": overhang, "y": height + overhang}
@@ -101,9 +86,10 @@ var timeline = {
       .y(function(d){ return d.y;})
       .interpolate("linear");
 
-    var viewerSvg = d3.select("body")      //main svg that will hold viewer polygon paths
+    //main svg that will hold viewer polygon paths
+    var viewerSvg = d3.select("body")
       .append("svg")
-        .attr("class","viewer-svg")        //*viewer svg CSS CLASS*
+        .attr("class","viewer-svg")
         .attr("width", width)
         .attr("height", height + overhang)
         .attr("fill","black")
@@ -111,12 +97,14 @@ var timeline = {
         .style("left", xPos)
         .style("top", yPos)
 
-    viewerSvg.append("path")                  //uses 'viewerLine' and 'viewerLineData' to make main polygon path and append to svg
+    //uses 'viewerLine' and 'viewerLineData' to make main polygon path and append to svg
+    viewerSvg.append("path")
       .attr("d", viewerLine(viewerLineData))
       .attr("stroke-width","0px")
       .attr("fill","#e84a0c");
 
-    viewerSvg.append("path")                     //uses 'viewerLine' and 'viewerBackLineData' to make small polygon path and append to svg
+    //uses 'viewerLine' and 'viewerBackLineData' to make small polygon path and append to svg
+    viewerSvg.append("path")
       .attr("d", viewerLine(viewerBackLineData))
       .attr("stroke-width","0px")
       .attr("fill","#333333");
@@ -127,23 +115,21 @@ var timeline = {
   /**
    * makeTextHolder
    *   Creates <div> and <p> to hold event texts and appends both to DOM
-   *
-   * -called by:
-   *   timeline.setUp
    */
   makeTextHolder: function(){
-    var height = timeline.measurements.height;
-    var width = timeline.measurements.textHolderWidth;
+    var height = timeline.meas.height;
+    var width = timeline.meas.textHolderWidth;
     var textHolder = document.createElement("div");
     var para = document.createElement("p");
 
-    textHolder.setAttribute("class","text-holder"); //*div CSS Class*
+    textHolder.setAttribute("class","text-holder");
     textHolder.style.width = width + "px";
     textHolder.style.height = height + "px";
 
-    para.setAttribute("class","text"); //*p CSS Class*
+    para.setAttribute("class","text");
     para.setAttribute("id","p");
-    para.style.opacity = 0;            //default state is hidden until user interacts with page
+
+    para.style.opacity = 0; //default state is hidden until user interacts with page
 
     textHolder.appendChild(para);
     document.body.appendChild(textHolder);
@@ -155,19 +141,13 @@ var timeline = {
    * useData
    *   Introduces data object and sets measurement values that need information
    *   from the data object. (This would be where AJAX call would be if used)
-   *
-   * -called by:
-   *   timeline.setUp
-   *
-   * +calls:
-   *   timeline.makeSvg
    */
   useData: function(){
     var data = timeline.data;
 
-    timeline.measurements.totalHeight = document.documentElement.clientHeight * (data.length / 2.5); //sets total height of timeline vis based on data object length
-    timeline.measurements.earliest = new Date(data[0].date);                                         //gets earliest date in data object (first event object)
-    timeline.measurements.latest = new Date(data[(data.length) - 1].date);                           //gets latest date in data object (last event object)
+    timeline.meas.totalHeight = document.documentElement.clientHeight * (data.length / 2.5);  //sets total height of timeline vis based on data object length
+    timeline.meas.earliest = new Date(data[0].date);  //gets earliest date in data object (first event object...have to keep in order)
+    timeline.meas.latest = new Date(data[(data.length) - 1].date);  //gets latest date in data object (last event object...have to keep in order)
 
     timeline.makeSvg();
   },
@@ -177,20 +157,15 @@ var timeline = {
   /**
    * makeSvg
    *   Creates main svg that holds timeline path and timeline elements
-   *
-   * -called by:
-   *   timeline.useData
-   *
-   * +calls:
-   *   timeline.makeTimeline
    */
   makeSvg: function(){
-    var totalHeight = timeline.measurements.totalHeight;
-    var width = timeline.measurements.width;
+    var totalHeight = timeline.meas.totalHeight;
+    var width = timeline.meas.width;
 
-    timeline.elements.svg = d3.select("body") //svg element which is the size of the body that holds all generates svg elements besides the viewer
+    //svg element which is the size of the body that holds all generates svg elements besides the viewer
+    timeline.elem.svg = d3.select("body")
       .append("svg")
-        .attr("class","svg")          //*main svg CSS class*
+        .attr("class","svg")
         .attr("width", width)
         .attr("height", totalHeight);
 
@@ -202,39 +177,38 @@ var timeline = {
   /**
    * makeTimeline
    *   Makes main timeline path and date ticks and appends them to main svg
-   *
-   * -called by:
-   *   timeline.makeSvg
-   *
-   * +calls:
-   *   timeline.makeCircles
    */
   makeTimeline: function(){
-    var circleRadius = timeline.measurements.circleRadius;
-    var earliest = timeline.measurements.earliest;
-    var latest = timeline.measurements.latest;
-    var padding = timeline.measurements.padding;
-    var svg = timeline.elements.svg;
-    var tickSize = timeline.measurements.rightSpace / 5;   //calculates ticksize of timeline axis based off size of right space
-    var timelineX = timeline.measurements.timelineXPos;
-    var totalHeight = timeline.measurements.totalHeight;
+    var circleRadius = timeline.meas.circleRadius;
+    var earliest = timeline.meas.earliest;
+    var latest = timeline.meas.latest;
+    var padding = timeline.meas.padding;
+    var svg = timeline.elem.svg;
+    var tickSize = timeline.meas.rightSpace / 5;  //calculates ticksize of timeline axis based off size of right space
+    var timelineX = timeline.meas.timelineXPos;
+    var totalHeight = timeline.meas.totalHeight;
 
-    var yScale = timeline.d3tools.yScale = d3.time.scale() //time scale for year event placement on timeline. Saved in 'd3tools' because it is used again in [timeline.makeCircles] to place circle points
+    //time scale for year event placement on timeline. Saved in 'd3tools' because
+    //it is used again in "timeline.makeCircles()" to place circle points
+    var yScale = timeline.d3tools.yScale = d3.time.scale()
       .domain([earliest, latest])
       .range([padding, totalHeight - padding]);
 
-    var yScaleSideAxis = timeline.d3tools.yScaleSideAxis = d3.svg.axis() //makes main timeline path into an axis
+    //makes main timeline path into an axis
+    var yScaleSideAxis = timeline.d3tools.yScaleSideAxis = d3.svg.axis()
       .scale(yScale)
       .orient("left")
-      .ticks(d3.time.years, 1)                                           //determines spacing of ticks on timeline axis
-      .innerTickSize(tickSize);                                          //determines length of ticks on timeline axis
+      .ticks(d3.time.years, 1)  //determines spacing of ticks on timeline axis
+      .innerTickSize(tickSize); //determines length of ticks on timeline axis
 
-    svg.append("g")                                             //creates and appends the main 'timeline' path to main svg
-      .attr("class","timeline-path")                            //*timeline path CSS class*
+    //creates and appends the main 'timeline' path to main svg
+    svg.append("g")
+      .attr("class","timeline-path")
       .style("transform", "translate(" + timelineX + "px,0px)")
       .call(yScaleSideAxis);
 
-    d3.selectAll(".tick text")                 //dynamically resizes the tick text
+    //dynamically resizes the tick text
+    d3.selectAll(".tick text")
       .style("font-size", circleRadius * 2.5);
 
     timeline.makeCircles();
@@ -246,33 +220,32 @@ var timeline = {
    * makeCircles
    *   Makes circles for every timeline event and appends them to the main svg,
    *   and adds y position to timeline.circleCY
-   *
-   * -called by:
-   *   timeline.makeTimeline
    */
   makeCircles: function(){
-    var circleCY = timeline.measurements.circleCY = [];    //array to hold y center position of all circle elements on screen. Saved in 'measurements' because it is used in [timeline.isScrolledIntoView] and [timeline.goWhere]
-    var circleRadius = timeline.measurements.circleRadius;
+    var circleCY = timeline.meas.circleCY = []; //array to hold y center position of all circle elements on screen. Saved and used in "timeline.isScrolledIntoView" and "timeline.goWhere"
+    var circleRadius = timeline.meas.circleRadius;
     var data = timeline.data;
-    var svg = timeline.elements.svg;
-    var timelineX = timeline.measurements.timelineXPos;
+    var svg = timeline.elem.svg;
+    var timelineX = timeline.meas.timelineXPos;
     var yScale = timeline.d3tools.yScale;
 
-    var circles = timeline.elements.circles = svg
+    //D3, makes all circle points for every event
+    var circles = timeline.elem.circles = svg
       .append("g")
         .selectAll(".circle")
         .data(data)
         .enter()
       .append("circle")
-        .attr("class", "circle")                                             //*circle element CSS class*
-        .attr("cx", timelineX)                                               //sets x position of circle elements so they are on the timeline path
-        .attr("cy", function(d){return d3.round(yScale(new Date(d.date)));}) //sets y position of circle elements (based on date of object in data)
+        .attr("class", "circle")
+        .attr("cx", timelineX)  //sets x position of circle elements so they are on the timeline path
+        .attr("cy", function(d){return d3.round(yScale(new Date(d.date)));})  //sets y position of circle elements (based on date of object in data)
         .attr("r", circleRadius)
         .attr("stroke", "#fff")
         .attr("stroke-width", 1)
         .attr("fill", "#bbbbbc");
 
-    for(var i = 0; i < circles[0].length; i++){                  //pushes all center y points of the circle elements into array
+    //pushes all center y points of the circle elements into array
+    for(var i = 0; i < circles[0].length; i++){
       circleCY.push(parseInt(circles[0][i].getAttribute("cy")));
     }
   },
@@ -283,12 +256,6 @@ var timeline = {
    * bindEventsAndCall
    *   Binds 'touchmove' listener to html DOM element that calls isScrolledIntoView
    *   function if fired
-   *
-   * -called by:
-   *   timeline.setUp
-   *
-   * +calls:
-   *   timeline.isScrolledIntoView
    */
   bindEventsAndCall: function(){
     d3.select("html").on("touchmove",function(){
@@ -308,49 +275,49 @@ var timeline = {
    *   are animated and other functions are then called to hide or show text
    *   descriptions associated with and event. Called every 250 ms due to momentum
    *   scrolling on touch screen devices.
-   *
-   * -called by:
-   *   timeline.bindEventsAndCall,
-   *   timeline.onReady
-   *
-   * +calls:
-   *   timeline.showText,
-   *   timeline.hideText
    */
   isScrolledIntoView: function(){
-    var circleCY = timeline.measurements.circleCY;
-    var circleRadius = timeline.measurements.circleRadius;
-    var circles = timeline.elements.circles;
+    var circleCY = timeline.meas.circleCY;
+    var circleRadius = timeline.meas.circleRadius;
+    var circles = timeline.elem.circles;
     var data = timeline.data;
     var viewerBottom = timeline.viewer.bottom;
     var viewerHeight = timeline.viewer.height;
     var viewerTop = timeline.viewer.top;
     var viewerWidth = timeline.viewer.width;
+    var badCounter = 0; //counter to see if all circle elements are out of bounds
+    var bodyScroll = window.scrollY;  //sees how far page has been scrolled
+    var d3Circle; //circle element being checked
+    var elementCenter;  //center y coordinate of the element being checked
 
-    var badCounter = 0;                       //counter to see if all circle elements are out of bounds
-    var bodyScroll = $( "body" ).scrollTop(); //jquery sees how far page has been scrolled
-    var d3Circle;                             //circle element being checked
-    var elementCenter;                        //center y coordinate of the element being checked
-
-    for(var i = 0; i < circles[0].length; i++){ //goes through all circle elements
+    //goes through all circle elements
+    for(var i = 0; i < circles[0].length; i++){
       d3Circle = d3.select(circles[0][i]);
       elementCenter = circleCY[i] - bodyScroll;
 
-      if(elementCenter >= viewerTop && elementCenter <= viewerBottom){ //checks to see if any of the circle's centers are between the top or bottom of the viewer
-        d3Circle.transition()                                          //animation effects for circle within the bounds
+      //checks to see if any of the circle's centers are between the top or bottom of the viewer
+      if(elementCenter >= viewerTop && elementCenter <= viewerBottom){
+
+        //animation effects for circle within the bounds
+        d3Circle.transition()
           .ease("elastic")
           .attr("r", circleRadius * 2.38)
           .attr("fill","#00adee");
 
         timeline.showText(i); //calls function to display event description associated with the circle element
-      }else{                        //if circle isnt within bounds
-        d3Circle.transition()       //animation effects for circles without of bounds
+
+      //if circle isnt within bounds
+      }else{
+
+        //animation effects for circles without of bounds
+        d3Circle.transition()
           .ease("elastic")
           .attr("r", circleRadius)
           .attr("fill","#bbbbbc");
 
-        if(badCounter === data.length - 1){ //if all the way through elements and none within bounds
-          timeline.hideText();              //calls function to hide displayed description text
+        //if all the way through elements and none within bounds
+        if(badCounter === data.length - 1){
+          timeline.hideText();  //calls function to hide displayed description text
         }
 
         badCounter++; //counter to make sure we checked all the circles before hiding the description text
@@ -366,45 +333,30 @@ var timeline = {
    *   element that is attached to this element in the main data object, and changes
    *   the opacity of the text so it is visible
    *
-   * @param pos {number} - Position of circle element in the circle array that is within the bounds of the viewer svg
-   *
-   * -called by:
-   *   timeline.isScrolledIntoView
-   *
-   * +calls:
-   *   timeline.makeYearText
+   * @param {number} pos - Position of circle element in the circle array that is within the bounds of the viewer svg
    */
   showText: function(pos){
     var data = timeline.data;
     var textElement = document.getElementById("p");
-    var textObject = data[pos].description;         //gets the events associated description
+    var textObject = data[pos].description; //gets the events associated description
 
     textElement.innerHTML = textObject;
-    textElement.style.opacity = 1;      //makes text element visible
-
+    textElement.style.opacity = 1;  //makes text element visible
     timeline.makeYearText(pos);
   },
 
 
 
-  //selects correspoinding DOM text and picture objects using passed position and hides them
   /**
    * hideText
    *   Selects <p> with id='p' from the DOM and changes the opacity of the text
    *   so that it is no longer visible. **DOESN'T DELETE THE INNER HTML OF <p>**
-   *
-   * -called by:
-   *   timeline.isScrolledIntoView
-   *
-   * +calls:
-   *   timeline.deleteYearText
    */
   hideText: function(){
     var textElement = document.getElementById("p");
 
     if(textElement){
-      textElement.style.opacity = 0; //makes text element not visible
-
+      textElement.style.opacity = 0;  //makes text element not visible
       timeline.deleteYearText();
     }
   },
@@ -416,10 +368,7 @@ var timeline = {
    *   When a circle is scrolled into view this function displays the year of that
    *   event within the viewer
    *
-   * @param pos {number} - Position of circle element in the circle array that is within the bounds of the viewer svg
-   *
-   * -called by:
-   *   timeline.showText
+   * @param {number} pos - Position of circle element in the circle array that is within the bounds of the viewer svg
    */
   makeYearText: function(pos){
     var data = timeline.data;
@@ -430,6 +379,7 @@ var timeline = {
 
     yearText.text(function(d){return new Date(d.date).getYear() + 1900;});
 
+    //D3, gets year text of event and displays in viewer
     yearText.enter()
       .append("text")
         .attr("x", viewerWidth / 10)
@@ -445,9 +395,6 @@ var timeline = {
   /**
    * deleteYearText
    *   selects text element within the viewer svg and removes it
-   *
-   * -called by:
-   *   timeline.hideText
    */
   deleteYearText: function(){
     var d3Viewer = d3.select(".viewer-svg");
@@ -464,20 +411,15 @@ var timeline = {
    *   calls function to set up standard buttons and specific timeline buttons,
    *   and then sets jquery setInterval function to call isScrolledIntoView every
    *   250 ms due to momentum scrolling from touch devices.
-   *
-   * -called by
-   *   timeline.setUp
-   *
-   * +calls
-   *   timeline.createTimelineButtons
-   *   timeline.isScrolledIntoView
    */
   onReady: function(){
     $( document ).ready(function(){
         timeline.createTimelineButtons();
-        setInterval(function(){           //starts reoccuring, time-delayed function call
+
+        //starts reoccuring, time-delayed function call
+        setInterval(function(){
           timeline.isScrolledIntoView();
-        }, 250);                          //time between reoccuring calls
+        }, 250);  //time between reoccuring calls
     });
   },
 
@@ -487,12 +429,6 @@ var timeline = {
    * createTimelineButtons
    *   Creates specific timeline buttons that controls navigation between previous
    *   and next events and adds them to the DOM
-   *
-   * -called by
-   *   timeline.onReady
-   *
-   * +calls
-   *   timeline.goPrevNext
    */
   createTimelineButtons: function(){
     var buttonNavWidth = d3.select(".button.nav").style("width"); //button that shows nav, width set by CSS
@@ -527,22 +463,19 @@ var timeline = {
    *   bounds of the viewer element (with goWhere) and scrolls to this point using
    *   jquery.
    *
-   * @param button {object} ---- The button that was pressed
-   * @param direction {number} - The direction you want to move, based on button pushed (0 for prev, 1 for next)
-   *
-   * -called by
-   *   timeline.createTimelineButtons
-   *
-   * +calls
-   *   timeline.goWhere
+   * @param {element} button - The button that was pressed
+   * @param {number} direction - The direction you want to move, based on button pushed (0 for prev, 1 for next)
    */
   goPrevNext: function(button, direction){
-    var height = timeline.measurements.height;
+    var height = timeline.meas.height;
     var elementCenter = timeline.goWhere(direction); //determines which element to scroll to with 'goWhere'
 
     d3.select(button).attr("id", "active");
     $( 'html, body' ).animate({scrollTop: elementCenter - height/2}, 500); //jquery scrolls to center of event element
+    //document.body.scrollTop = elementCenter - height/2; //without jquery, but no animation
   },
+
+
 
   /**
    * goWhere
@@ -551,32 +484,36 @@ var timeline = {
    *   circle elements to the top or bottom edge of the viewer object to determine
    *   which elements to return.
    *
-   * @param  direction {number} - The direction you want to move, based on button pushed (0 for prev, 1 for next)
-   *
-   * -called by
-   *   timeline.goPrevNext
+   * @param {number} direction - The direction you want to move, based on button pushed (0 for prev, 1 for next)
    */
   goWhere: function(direction){
-    var circleCY = timeline.measurements.circleCY;
-    var circles = timeline.elements.circles;
+    var circleCY = timeline.meas.circleCY;
+    var circles = timeline.elem.circles;
     var viewerBottom = timeline.viewer.bottom;
     var viewerTop = timeline.viewer.top;
-    var scrollTop = d3.round($( "body" ).scrollTop() + viewerTop);
-    var scrollBottom = d3.round($( "body" ).scrollTop() + viewerBottom);
+    var scrollTop = d3.round(window.scrollY + viewerTop); //$( "body" ).scrollTop() + viewerTop);
+    var scrollBottom = d3.round(window.scrollY + viewerBottom); //$( "body" ).scrollTop() + viewerBottom);
 
     for(var i = 0; i < circles[0].length; i++){
       var element = circles[0][i];
       var elementCenter = circleCY[i];
 
-      if(direction === 0 && i > 0 && elementCenter >= scrollTop){ //if 'prev' gets the first circle element that is past the top of the viewer, then returns the element before that
-        --i;
-        elementCenter = circleCY[i];
-        return elementCenter;
+      //if direction is 'prev' (0), not the first element, and there is an element center greater than the top viewer measurement
+      if(direction === 0 && i > 0 && elementCenter >= scrollTop){
+        --i; //decrements counter
+        elementCenter = circleCY[i];  //resets element center to previous circle
+        return elementCenter; //returns center y measurement of previous circle
+
+      //if direction is 'next' (1)
       }else{
-        if(elementCenter >= scrollBottom){ //if 'next' gets the first circle past the bottom of the viewer, and returns that element
-          return elementCenter;
-        }else if(i == circles[0].length -1){ //if gone through all the elements stay on last one
-          return elementCenter;
+
+        //if there is a circle past the bottom of the viewer
+        if(elementCenter >= scrollBottom){
+          return elementCenter; //returns that element
+
+        //if gone through all the elements
+        }else if(i == circles[0].length -1){
+          return elementCenter;// return last circle element center (stay on last event in timeline)
         }
       }
     }
