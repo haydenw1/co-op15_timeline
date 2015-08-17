@@ -26,9 +26,41 @@ body {
   left: calc(54%);
 }
 
+.content {
+  position: relative;
+  margin: 20px;
+  transition: opacity .35s linear;
+  z-index: 3;
+
+  img {
+    height: auto;
+    max-width: 100%;
+    width: auto;
+  }
+}
+
+div.prototype-wrapper {
+  position: fixed;
+  top: 8%;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity .35s linear;
+}
+
+#expand-back {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #000;
+  opacity: .85;
+  z-index: 4;
+}
+
 .svg {
   position: relative;
-  z-index: 2;
+  z-index: 0;
 }
 
 //Div to Hold Event Details
@@ -38,10 +70,10 @@ body {
   //box-shadow: 0px -110px 110px -25px rgba(0,0,0,.50) inset;
   left: 0;
   margin: 0;
-  pointer-events: none;
+  //pointer-events: none;
   position: fixed;
   top: 0;
-  z-index: 1;
+  z-index: -1;
   -webkit-transform: translate3d(0, 0, 0);
 
   //Positions and Styles Event Descriptions
@@ -51,6 +83,7 @@ body {
     line-height: 1.25;
     margin: 0;
     padding: 20px;
+    padding-right: 35px;
     position: absolute;
     //text-indent: 1em;
     text-shadow: 1px 1px 1px rgba(0,0,0,.4);

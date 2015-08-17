@@ -16,6 +16,8 @@ var timeline = {
   //of points and coordinates needed to contruct it
   viewer: {},
 
+  displayed: false,
+
 
 
   /**
@@ -43,7 +45,7 @@ var timeline = {
     tV.top = tV.yPos;
 
     timeline.makeViewer();
-    timeline.makeTextHolder();
+    timeline.makeContentHolder();
     timeline.useData();
     buttons.createButtons();
     timeline.bindEventsAndCall();
@@ -113,26 +115,32 @@ var timeline = {
 
 
   /**
-   * makeTextHolder
+   * makeContentHolder
    *   Creates <div> and <p> to hold event texts and appends both to DOM
    */
-  makeTextHolder: function(){
+  makeContentHolder: function(){
     var height = timeline.meas.height;
     var width = timeline.meas.textHolderWidth;
-    var textHolder = document.createElement("div");
-    var para = document.createElement("p");
+    var contentHolder = document.createElement("div");
+    var eventContentDiv = document.createElement("div");
+    var textP = document.createElement("p");
 
-    textHolder.setAttribute("class","text-holder");
-    textHolder.style.width = width + "px";
-    textHolder.style.height = height + "px";
+    contentHolder.setAttribute("class","text-holder");
+    contentHolder.style.width = width + "px";
+    contentHolder.style.height = height + "px";
 
-    para.setAttribute("class","text");
-    para.setAttribute("id","p");
+    eventContentDiv.setAttribute("class","content");
+    eventContentDiv.setAttribute("id","c");
+    eventContentDiv.style.width = width - 40 + "px";
+    eventContentDiv.style.opacity = 0;
 
-    para.style.opacity = 0; //default state is hidden until user interacts with page
+    textP.setAttribute("class","text");
+    textP.setAttribute("id","p");
+    textP.style.opacity = 0; //default state is hidden until user interacts with page
 
-    textHolder.appendChild(para);
-    document.body.appendChild(textHolder);
+    contentHolder.appendChild(eventContentDiv);
+    contentHolder.appendChild(textP);
+    document.body.appendChild(contentHolder);
   },
 
 
@@ -298,31 +306,117 @@ var timeline = {
       //checks to see if any of the circle's centers are between the top or bottom of the viewer
       if(elementCenter >= viewerTop && elementCenter <= viewerBottom){
 
-        //animation effects for circle within the bounds
-        d3Circle.transition()
-          .ease("elastic")
-          .attr("r", circleRadius * 2.38)
-          .attr("fill","#00adee");
+        //if the element WASN'T displayed
+        if(!data[i].displayed){
 
-        timeline.showText(i); //calls function to display event description associated with the circle element
+          //animation effects for circle within the bounds
+          d3Circle.transition()
+            .ease("elastic")
+            .attr("r", circleRadius * 2.38)
+            .attr("fill","#00adee");
 
-      //if circle isnt within bounds
+          timeline.hideContent();
+          timeline.chooseContent(i); //calls function to display content associated with the circle element
+          timeline.showText(i); //calls function to display event description associated with the circle element
+
+          data[i].displayed = true; //sets displayed property of this event object to true
+        }
+
+       //if circle isn't between the top or bottom of the viewer
       }else{
 
-        //animation effects for circles without of bounds
-        d3Circle.transition()
-          .ease("elastic")
-          .attr("r", circleRadius)
-          .attr("fill","#bbbbbc");
+        //if the element WAS displayed
+        if(data[i].displayed){
+
+          //animation effects for circles without of bounds
+          d3Circle.transition()
+            .ease("elastic")
+            .attr("r", circleRadius)
+            .attr("fill","#bbbbbc");
+
+          data[i].displayed = false;  //sets displayed property of this event object to false
+        }
 
         //if all the way through elements and none within bounds
         if(badCounter === data.length - 1){
+          timeline.hideContent();
           timeline.hideText();  //calls function to hide displayed description text
         }
 
         badCounter++; //counter to make sure we checked all the circles before hiding the description text
       }
     }
+  },
+
+
+
+  /**
+   * chooseContent
+   *   Decides which content to display and how to display it based on what is in
+   *   the content object of the event object in the main data object
+   *
+   * @param {number} pos - Position of circle element in the circle array that is within the bounds of the viewer svg
+   */
+  chooseContent: function(pos){
+    var content = timeline.data[pos].content
+    var contentElement = document.getElementById("c");
+
+    contentElement.innerHTML = "";
+
+    if(content){
+      if(content.image){
+        timeline.showContentImage(content.image, contentElement);
+      }else if(content.audio){
+        timeline.showContentAudio(content.audio, contentElement);
+      }
+    }
+  },
+
+
+
+  /**
+   * showContentImage
+   *   Adds an image element to content div then sets the image src based on the
+   *   content.image property of the event
+   *
+   * @param {element} contentElement - DOM element that will hold the event image
+   * @param {string} image - string to set as image source
+   */
+  showContentImage: function(image, contentElement){
+    var contentImage = document.createElement("img");
+
+    contentImage.src = "assets/images/" + image;
+    console.log(contentImage.src);
+
+    contentElement.appendChild(contentImage);
+    contentElement.style.opacity = 1;
+  },
+
+
+  /**
+   * showContentAudio
+   *   Adds HTML5 audio elements to the content div then sets the image src based on the
+   *   content.audio property of the event
+   *
+   * @param  {string} audio - string to set as audio source
+   * @param  {element} contentElement - DOM element that will hold the event audio
+   */
+  showContentAudio: function(audio, contentElement){
+    var audioWrapper = document.getElementsByClassName("prototype-wrapper")[0];
+
+    console.log(audio);
+
+    var myCirclePlayer = new CirclePlayer("#jquery_jplayer_1",
+    {
+      oga: "assets/audio/" + audio
+    }, {
+      cssSelectorAncestor: "#cp_container_1"
+    });
+
+    audioWrapper.style.width = timeline.meas.textHolderWidth + "px";
+    audioWrapper.style.opacity = 1;
+    audioWrapper.style.pointerEvents = "auto";
+    //audioWrapper.style.zIndex = 500;
   },
 
 
@@ -341,8 +435,20 @@ var timeline = {
     var textObject = data[pos].description; //gets the events associated description
 
     textElement.innerHTML = textObject;
+    textElement.style.top = (timeline.meas.height / 2) - (textElement.clientHeight / 2) + "px";
     textElement.style.opacity = 1;  //makes text element visible
+
     timeline.makeYearText(pos);
+  },
+
+
+
+  hideContent: function(){
+    document.getElementById("c").style.opacity = 0;
+
+    var audioWrapper = document.getElementsByClassName("prototype-wrapper")[0];
+    audioWrapper.style.opacity = 0;
+    audioWrapper.style.pointerEvents = "none";
   },
 
 
@@ -525,13 +631,17 @@ var timeline = {
     {
       "description":"Mark Ellingson, President of the Rochester Athenaeum & Mechanics Institute (RAMI) takes over the Empire State School of Printing located in Ithaca, New York, and it becomes a two-year program.",
       "date":"1/1/1937",
-      "pic":"cias.jpg"
+      content: {
+        "image":"cias.jpg"
+      }
     },
 
     {
       "description":"20 freshman enroll in the program with the first major printing project by the department being the student newspaper, PSIMAR.",
       "date":"1/1/1938",
-      "pic":"cias.jpg"
+      content: {
+        "audio":"horse.ogg"
+      }
     },
 
     {

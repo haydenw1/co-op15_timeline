@@ -4,7 +4,7 @@ body {
   padding: 0; }
 
 .button {
-  background: #e84a0c;
+  background-color: #666;
   border-radius: 100%;
   bottom: calc(2.5%);
   color: #fff;
@@ -15,6 +15,10 @@ body {
   z-index: 5; }
   .button img {
     float: left; }
+  .button.description {
+    bottom: calc(50%);
+    left: calc(44%);
+    transition: bottom 1s, left 1s, height 1s, width 1s; }
   .button.help {
     left: calc(77%); }
   .button#active {
@@ -36,19 +40,45 @@ body {
 .button.next {
   left: calc(54%); }
 
+.content {
+  position: relative;
+  margin: 20px;
+  transition: opacity .35s linear;
+  z-index: 3; }
+  .content img {
+    height: auto;
+    max-width: 100%;
+    width: auto; }
+
+div.prototype-wrapper {
+  position: fixed;
+  top: 8%;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity .35s linear; }
+
+#expand-back {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #000;
+  opacity: .85;
+  z-index: 4; }
+
 .svg {
   position: relative;
-  z-index: 2; }
+  z-index: 0; }
 
 .text-holder {
   background-color: #025594;
   bottom: 0;
   left: 0;
   margin: 0;
-  pointer-events: none;
   position: fixed;
   top: 0;
-  z-index: 1;
+  z-index: -1;
   -webkit-transform: translate3d(0, 0, 0); }
   .text-holder .text {
     color: #fff;
@@ -56,6 +86,7 @@ body {
     line-height: 1.25;
     margin: 0;
     padding: 20px;
+    padding-right: 35px;
     position: absolute;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
     transition: opacity 0.35s linear; }
