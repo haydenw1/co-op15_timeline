@@ -16,7 +16,12 @@ var timeline = {
   //of points and coordinates needed to contruct it
   viewer: {},
 
+  //main object property to keep track of if an event is currently displayed
   displayed: false,
+
+
+  //main object property to keep track of whether or not the content holder is
+  //expanded or not
   expanded: false,
 
 
@@ -26,13 +31,13 @@ var timeline = {
    *   file to start constructions of the timeline elements
    */
   setUp: function(){
-    var tM = timeline.meas; // var to make property assignments of the measurements object more readable
-    var tV = timeline.viewer; // var to make property assignments of the viewer object more readable
+    var tM = timeline.meas; //var to make property assignments of the measurements object more readable
+    var tV = timeline.viewer; //var to make property assignments of the viewer object more readable
 
     tM.width = document.documentElement.clientWidth;
     tM.height = document.documentElement.clientHeight;
     tM.padding = document.documentElement.clientHeight/2; //padding that determines where timeline axis stops
-    tM.contentHolderWidth = tM.width * 0.7;
+    tM.eventHolderWidth = tM.width * 0.7;
     tM.rightSpace = tM.width - (tM.width * 0.7);
     tM.circleRadius = tM.rightSpace * (7 / 120);
     tM.timelineXPos = tM.width * (15.5 / 16);
@@ -41,15 +46,17 @@ var timeline = {
     tV.height = tV.width / 3;
     tV.xPos = (tM.timelineXPos - 1.5) - tV.width;
     tV.yPos = (tM.height / 2) - (tV.height / 2);
-    tV.overhang = tM.contentHolderWidth - tV.xPos;
+    tV.overhang = tM.eventHolderWidth - tV.xPos; //how much viewer goes past content holder width
     tV.bottom = tV.yPos + tV.height;
     tV.top = tV.yPos;
 
     timeline.makeViewer();
-    timeline.makeContentHolder();
+    timeline.makeEventHolder();
 
     timeline.useData();
-    buttons.createButtons();
+
+    buttons.createButtons();//call to 'buttons.js' to construct default buttons
+
     timeline.bindEventsAndCall();
     timeline.onReady();
   },
@@ -113,45 +120,42 @@ var timeline = {
       .attr("stroke-width","0px")
       .attr("fill","#333333");
 
-    timeline.elem.viewer = viewerSvg[0][0];
+    timeline.elem.viewer = viewerSvg[0][0]; //put viewer svg element in main elements object ([0][0] used because initial variable was created with d3)
   },
 
 
 
   /**
-   * makeContentHolder
+   * makeEventHolder
    *   Creates <div> and <p> to hold event texts and appends both to DOM
    */
-  makeContentHolder: function(){
+  makeEventHolder: function(){
     var height = timeline.meas.height;
-    var width = timeline.meas.contentHolderWidth;
+    var width = timeline.meas.eventHolderWidth;
+    var eventHolder = timeline.elem.eventHolder = document.getElementById("event-holder");  //get and save content div
+    var eventContent = timeline.elem.eventContent = document.createElement("div"); //create and save event content div
+    var eventText = timeline.elem.eventText = document.createElement("p");  //create and save text paragraph tag
 
-    var contentHolder = timeline.elem.contentHolder = document.getElementById("content-holder");
-    var eventContentDiv = timeline.elem.eventContent = document.createElement("div");
-    var textP = timeline.elem.textElement = document.createElement("p");
-
-    contentHolder.onclick = function(){
-      timeline.expand(this);
+    eventHolder.onclick = function(){
+      timeline.expand();
     }
 
-    contentHolder.ontouchmove = function(){
-      timeline.expand(this);
+    eventHolder.ontouchmove = function(){
+      timeline.expand();
     }
 
-    contentHolder.style.width = width + "px";
-    contentHolder.style.height = height + "px";
+    eventHolder.style.width = width + "px";
+    eventHolder.style.height = height + "px";
 
-    eventContentDiv.setAttribute("class","content");
-    eventContentDiv.setAttribute("id","c");
-    eventContentDiv.style.width = width - 40 + "px";
-    eventContentDiv.style.opacity = 0;
+    eventContent.setAttribute("class","content");
+    eventContent.setAttribute("id","c");
+    eventContent.style.width = width - 40 + "px";
 
-    textP.setAttribute("class","text");
-    textP.setAttribute("id","p");
-    textP.style.opacity = 0; //default state is hidden until user interacts with page
+    eventText.setAttribute("class","text");
+    eventText.setAttribute("id","p");
 
-    contentHolder.appendChild(eventContentDiv);
-    contentHolder.appendChild(textP);
+    eventHolder.appendChild(eventContent);
+    eventHolder.appendChild(eventText);
   },
 
 
@@ -279,7 +283,7 @@ var timeline = {
   bindEventsAndCall: function(){
     d3.select("html").on("touchmove",function(){
       timeline.isScrolledIntoView();
-      timeline.deExpand();
+      timeline.contract();
     });
 
     timeline.isScrolledIntoView();
@@ -327,7 +331,7 @@ var timeline = {
             .attr("r", circleRadius * 2.38)
             .attr("fill","#00adee");
 
-          timeline.hideContent();
+          timeline.hideContent(); //hides old content
           timeline.chooseContent(i); //calls function to display content associated with the circle element
           timeline.showText(i); //calls function to display event description associated with the circle element
 
@@ -373,15 +377,20 @@ var timeline = {
    */
   chooseContent: function(pos){
     var content = timeline.data[pos].content
-    var contentElement = document.getElementById("c");
+    var eventContent = timeline.elem.eventContent
 
-    contentElement.innerHTML = "";
+    eventContent.innerHTML = ""; //make sure old content is clear
 
+    //if the event has associated content
     if(content){
+
+      //if the content is an image
       if(content.image){
-        timeline.showContentImage(content.image, contentElement);
+        timeline.showContentImage(content.image, eventContent);
+
+      //if the content is audio
       }else if(content.audio){
-        timeline.showContentAudio(content.audio, contentElement);
+        timeline.showContentAudio(content.audio, eventContent);
       }
     }
   },
@@ -405,16 +414,20 @@ var timeline = {
   },
 
 
+
   /**
    * showContentAudio
    *   Adds HTML5 audio elements to the content div then sets the image src based on the
-   *   content.audio property of the event
+   *   content.audio property of the event. Uses premade styling 'jplayer' instead
+   *   of default html5 audio player for sizing reasons
    *
    * @param  {string} audio - string to set as audio source
    * @param  {element} contentElement - DOM element that will hold the event audio
    */
   showContentAudio: function(audio, contentElement){
-    var audioWrapper = document.getElementsByClassName("prototype-wrapper")[0];
+    var audioWrapper = document.getElementsByClassName("prototype-wrapper")[0]; //get jplayer wrapper class
+
+    //create new jplayer instance with selected audio
     var myCirclePlayer = new CirclePlayer("#jquery_jplayer_1",
     {
       oga: "assets/audio/" + audio
@@ -422,8 +435,9 @@ var timeline = {
       cssSelectorAncestor: "#cp_container_1"
     });
 
+    //if there is a jplayer wrapper class
     if(audioWrapper){
-      audioWrapper.style.width = timeline.meas.contentHolderWidth + "px";
+      audioWrapper.style.width = timeline.meas.eventHolderWidth + "px";
       audioWrapper.style.opacity = 1;
       audioWrapper.style.pointerEvents = "auto";
       audioWrapper.style.display = "block";
@@ -442,68 +456,102 @@ var timeline = {
    */
   showText: function(pos){
     var data = timeline.data;
-    var textElement = timeline.elem.textElement;
+    var eventText = timeline.elem.eventText;
     var textObject = data[pos].description; //gets the events associated description
 
-    textElement.innerHTML = textObject;
+    eventText.innerHTML = textObject;
     if(!timeline.expanded){
-      textElement.style.top = (timeline.meas.height / 2) - (textElement.clientHeight / 2) + "px";
+      eventText.style.top = (timeline.meas.height / 2) - (eventText.clientHeight / 2) + "px";
     }
-    textElement.style.opacity = 1;  //makes text element visible
+    eventText.style.opacity = 1;  //makes text element visible
 
-    timeline.meas.textElementHeight = textElement.clientHeight; //save for use in deExpand function
+    timeline.meas.textElementHeight = eventText.clientHeight; //save for use in contract function
     timeline.makeYearText(pos);
   },
 
 
 
-  expand: function(element){
-    if(timeline.expanded == true){
-      timeline.deExpand();
-      timeline.expanded = false;
+  /**
+   * expand
+   *   expands the event holder to cover the timeline, moves the viewer to top center
+   *   of event holder, resizes event content and event text
+   */
+  expand: function(){
+    var tE = timeline.elem; //var to make property assignments of elements more readable
+
+    //if timeline is already expanded
+    if(timeline.expanded === true){
+      timeline.contract();  //contract the event holder
+      timeline.expanded = false;  //record that event holder is now contracted
       return;
     }
-    if(timeline.displayed == false) return;
 
-    timeline.elem.textElement.style.top = "0px";
-    timeline.elem.textElement.style.position = "relative";
+    if(timeline.displayed === false) return;  //if no event is displayed, do not allow event holder to expand
 
-    timeline.elem.contentHolder.style.width = timeline.meas.width + "px";
+    //sizing and positioning of elements to expand: event content, event holder,
+    //event text, and the viewer
+    tE.eventContent.style.width = timeline.meas.width - 40 + "px";
+    tE.eventHolder.style.width = timeline.meas.width + "px";
+    tE.eventHolder.style.paddingTop = "calc(5% + " + timeline.viewer.height + "px)";
+    tE.eventText.style.top = "0px";
+    tE.eventText.style.position = "relative";
+    tE.viewer.style.top = "2.5%";
+    tE.viewer.style.left = "calc(50% - " + timeline.viewer.width * (5 / 12) + "px)";
+    tE.viewer.style.width = timeline.viewer.width * (5 / 6);
+    tE.viewer.style.height = timeline.viewer.height - 1;
 
-    timeline.elem.eventContent.style.width = timeline.meas.width - 40 + "px";
-
-    timeline.elem.viewer.style.zIndex = -1;
-    timeline.elem.viewer.style.opacity = 0;
-
-    timeline.expanded = true;
+    timeline.expanded = true; //record that the event holder is now expanded
   },
 
-  deExpand: function(){
-    timeline.elem.contentHolder.style.width = timeline.meas.contentHolderWidth + "px";
-    timeline.elem.viewer.style.zIndex = 3;
-    timeline.elem.viewer.style.opacity = 1;
 
-    timeline.elem.textElement.style.position = "absolute";
-    timeline.elem.textElement.style.top = (timeline.meas.height / 2) - (timeline.meas.textElementHeight/ 2) + "px";
 
+  /**
+   * contract
+   *   returns event holder to normal size and position on left, exposing timeline
+   */
+  contract: function(){
+    var tE = timeline.elem; //var to make property assignments of elements more readable
+    var tM = timeline.meas; //var to make getting and setting measurements more readable
+
+    tE.eventContent.style.width = tM.eventHolderWidth - 40 + "px";
+    tE.eventContent.style.top = 0 + "px";
+
+    tE.eventHolder.style.width = tM.eventHolderWidth + "px";
+    tE.eventHolder.style.paddingTop = "0px";
+
+    tE.eventText.style.position = "absolute";
+    tE.eventText.style.top = (tM.height / 2) - (tM.textElementHeight/ 2) + "px";//this gets event text close to final position but slightly off due to css transitions
+
+    //top measurement for text is weird due to css transitions...timeout until transitions
+    //are completed and then correct text placement (set for 250 ms)
     setTimeout(function(){
-      timeline.elem.textElement.style.top = (timeline.meas.height / 2) - (timeline.elem.textElement.clientHeight/ 2) + "px";
-      console.log(timeline.elem.textElement.clientHeight);
+      tE.eventText.style.top = (tM.height / 2) - (tE.eventText.clientHeight/ 2) + "px";
+      tM.textElementHeight = tE.eventText.clientHeight; //update new saved height
     }, 250);
 
-    timeline.elem.eventContent.style.width = timeline.meas.contentHolderWidth - 40 + "px";
-    timeline.elem.eventContent.style.top = 0 + "px";
+    tE.viewer.style.top = timeline.viewer.yPos;
+    tE.viewer.style.left = timeline.viewer.xPos;
+    tE.viewer.style.width = timeline.viewer.width;
+    tE.viewer.style.height = timeline.viewer.height + timeline.viewer.overhang;
 
-    timeline.expanded = false;
+    timeline.expanded = false;  //record that event holder is now contracted
   },
 
-  hideContent: function(){
-    document.getElementById("c").style.opacity = 0;
 
-    var audioWrapper = document.getElementsByClassName("prototype-wrapper")[0];
+
+  /**
+   * hideContent
+   *   makes content div within event holder not visible, as well as jplayer audio
+   *   elements
+   */
+  hideContent: function(){
+    var audioWrapper = document.getElementsByClassName("prototype-wrapper")[0]; //select jplayer audio player
+
     audioWrapper.style.opacity = 0;
     audioWrapper.style.pointerEvents = "none";
     audioWrapper.style.display = "none";
+
+    timeline.elem.eventContent.style.opacity = 0;
   },
 
 
@@ -514,10 +562,10 @@ var timeline = {
    *   so that it is no longer visible. **DOESN'T DELETE THE INNER HTML OF <p>**
    */
   hideText: function(){
-    var textElement = timeline.elem.textElement;
+    var eventText = timeline.elem.eventText;
 
-    if(textElement){
-      textElement.style.opacity = 0;  //makes text element not visible
+    if(eventText){
+      eventText.style.opacity = 0;  //makes text element not visible
       timeline.deleteYearText();
     }
   },
@@ -538,10 +586,7 @@ var timeline = {
     var yearText = d3.select(".viewer-svg").selectAll("text")
       .data([data[pos]]);
 
-    yearText.text(function(d){return new Date(d.date).getYear() + 1900;});
-
-    //var yearTextWidth = parseInt(yearText.style("width"));
-    //console.log(yearText.text);
+    yearText.text(function(d){return new Date(d.date).getYear() + 1900;});  //necessary to keep date updated
 
     //D3, gets year text of event and displays in viewer
     yearText.enter()
@@ -553,8 +598,11 @@ var timeline = {
         .style("text-shadow","2px 3px 4px rgba(0,0,0,.5)")
         .text(function(d){return new Date(d.date).getYear() + 1900;});
 
-    //var yearTextWidth = parseInt(yearText.style("width"));
-    yearText.attr("x", function(){return (((viewerWidth - (viewerWidth * (1 / 6))) - (parseInt(yearText.style("width")))) / 2)}); //center the year text in the viewer dynamically
+    //variables defined after text elements are created to help center text in viewer
+    var viewerSquare = viewerWidth - (viewerWidth * (1 / 6));
+    var viewerTextWidth = parseInt(yearText.style("width"));
+
+    yearText.attr("x", function(){return (viewerSquare - viewerTextWidth) / 2}); //centers text in viewer
   },
 
 
@@ -564,10 +612,9 @@ var timeline = {
    *   selects text element within the viewer svg and removes it
    */
   deleteYearText: function(){
-    var d3Viewer = d3.select(".viewer-svg");
-
-    d3Viewer.selectAll("text")
-      .remove();
+    d3.select(".viewer-svg")
+      .selectAll("text")
+        .remove();
   },
 
 
@@ -685,6 +732,7 @@ var timeline = {
       }
     }
   },
+
 
 
   //local data object, update to add or subtract events from the timeline
