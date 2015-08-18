@@ -42,45 +42,47 @@ body {
 
 .content {
   position: relative;
-  margin: 20px;
-  transition: opacity .35s linear;
-  z-index: 3; }
+  margin: 20px 20px 0px 20px;
+  transition: opacity .35s linear, width .2s linear, top .2s linear;
+  z-index: 1; }
   .content img {
     height: auto;
     max-width: 100%;
     width: auto; }
 
 div.prototype-wrapper {
-  position: fixed;
+  position: relative;
+  width: 100%;
+  padding-bottom: 30px;
   top: 8%;
   z-index: 1;
   opacity: 0;
-  transition: opacity .35s linear; }
+  transition: opacity .35s linear, width .2s linear; }
 
 #expand-back {
   position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
-  right: 0;
   background-color: #000;
   opacity: .85;
-  z-index: 4; }
+  z-index: -1; }
 
 .svg {
-  position: relative;
-  z-index: 0; }
+  position: absolute;
+  z-index: -2; }
 
-.text-holder {
+#content-holder {
   background-color: #025594;
   bottom: 0;
   left: 0;
   margin: 0;
   position: fixed;
   top: 0;
-  z-index: -1;
+  transition: width .2s linear;
+  z-index: 0;
   -webkit-transform: translate3d(0, 0, 0); }
-  .text-holder .text {
+  #content-holder .text {
     color: #fff;
     font-size: 1.25em;
     line-height: 1.25;
@@ -89,7 +91,8 @@ div.prototype-wrapper {
     padding-right: 35px;
     position: absolute;
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
-    transition: opacity 0.35s linear; }
+    transition: opacity 0.35s linear;
+    z-index: -2; }
 
 .timeline-path path {
   fill: none;
@@ -103,6 +106,8 @@ div.prototype-wrapper {
   stroke: #333; }
 
 .viewer-svg {
-  z-index: 3; }
+  z-index: 3;
+  opacity: 1;
+  transition: opacity .35s linear; }
 
 /*# sourceMappingURL=main.css.map */

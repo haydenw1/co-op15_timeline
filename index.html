@@ -38,9 +38,10 @@
     <!-- The jPlayer div must not be hidden. Keep it at the root of the body element to avoid any such problems. -->
     <div id="jquery_jplayer_1" class="cp-jplayer"></div>
 
-    <div class="prototype-wrapper"> <!-- A wrapper to emulate use in a webpage and center align -->
+    <div id="content-holder">
 
-      <!-- The container for the interface can go where you want to display it. Show and hide it as you need. -->
+    <div class="prototype-wrapper"> <!-- A wrapper to emulate use in a webpage and center align -->
+    <!-- The container for the interface can go where you want to display it. Show and hide it as you need. -->
       <div id="cp_container_1" class="cp-container">
         <div class="cp-buffer-holder"> <!-- .cp-gt50 only needed when buffer is > than 50% -->
           <div class="cp-buffer-1"></div>
@@ -56,10 +57,9 @@
           <li><a href="#" class="cp-pause" style="display:none;" tabindex="1">pause</a></li> <!-- Needs the inline style here, or jQuery.show() uses display:inline instead of display:block -->
         </ul>
       </div>
-
+    </div>
     </div>
 
-    <div id="expand-back"></div>
 
     <script>
       timeline.setUp(); // starts initial function in main.js

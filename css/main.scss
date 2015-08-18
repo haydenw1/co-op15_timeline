@@ -28,9 +28,9 @@ body {
 
 .content {
   position: relative;
-  margin: 20px;
-  transition: opacity .35s linear;
-  z-index: 3;
+  margin: 20px 20px 0px 20px;
+  transition: opacity .35s linear, width .2s linear, top .2s linear;
+  z-index: 1;
 
   img {
     height: auto;
@@ -40,11 +40,14 @@ body {
 }
 
 div.prototype-wrapper {
-  position: fixed;
+  position: relative;
+  width: 100%;
+  padding-bottom: 30px;
   top: 8%;
   z-index: 1;
   opacity: 0;
-  transition: opacity .35s linear;
+  transition: opacity .35s linear, width .2s linear;
+
 }
 
 #expand-back {
@@ -52,19 +55,19 @@ div.prototype-wrapper {
   top: 0;
   bottom: 0;
   left: 0;
-  right: 0;
+  //right: 0;
   background-color: #000;
   opacity: .85;
-  z-index: 4;
+  z-index: -1;
 }
 
 .svg {
-  position: relative;
-  z-index: 0;
+  position: absolute;
+  z-index: -2;
 }
 
 //Div to Hold Event Details
-.text-holder {
+#content-holder {
   background-color: #025594;
   bottom: 0;
   //box-shadow: 0px -110px 110px -25px rgba(0,0,0,.50) inset;
@@ -73,7 +76,8 @@ div.prototype-wrapper {
   //pointer-events: none;
   position: fixed;
   top: 0;
-  z-index: -1;
+  transition: width .2s linear;
+  z-index: 0;
   -webkit-transform: translate3d(0, 0, 0);
 
   //Positions and Styles Event Descriptions
@@ -88,6 +92,7 @@ div.prototype-wrapper {
     //text-indent: 1em;
     text-shadow: 1px 1px 1px rgba(0,0,0,.4);
     transition: opacity 0.35s linear;
+    z-index: -2;
   }
 }
 
@@ -111,4 +116,6 @@ div.prototype-wrapper {
 
 .viewer-svg {
   z-index: 3;
+  opacity: 1;
+  transition: opacity .35s linear;
 }

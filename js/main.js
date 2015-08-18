@@ -17,6 +17,7 @@ var timeline = {
   viewer: {},
 
   displayed: false,
+  expanded: false,
 
 
 
@@ -31,7 +32,7 @@ var timeline = {
     tM.width = document.documentElement.clientWidth;
     tM.height = document.documentElement.clientHeight;
     tM.padding = document.documentElement.clientHeight/2; //padding that determines where timeline axis stops
-    tM.textHolderWidth = tM.width * 0.7;
+    tM.contentHolderWidth = tM.width * 0.7;
     tM.rightSpace = tM.width - (tM.width * 0.7);
     tM.circleRadius = tM.rightSpace * (7 / 120);
     tM.timelineXPos = tM.width * (15.5 / 16);
@@ -40,12 +41,13 @@ var timeline = {
     tV.height = tV.width / 3;
     tV.xPos = (tM.timelineXPos - 1.5) - tV.width;
     tV.yPos = (tM.height / 2) - (tV.height / 2);
-    tV.overhang = tM.textHolderWidth - tV.xPos;
+    tV.overhang = tM.contentHolderWidth - tV.xPos;
     tV.bottom = tV.yPos + tV.height;
     tV.top = tV.yPos;
 
     timeline.makeViewer();
     timeline.makeContentHolder();
+
     timeline.useData();
     buttons.createButtons();
     timeline.bindEventsAndCall();
@@ -110,6 +112,8 @@ var timeline = {
       .attr("d", viewerLine(viewerBackLineData))
       .attr("stroke-width","0px")
       .attr("fill","#333333");
+
+    timeline.elem.viewer = viewerSvg[0][0];
   },
 
 
@@ -120,12 +124,20 @@ var timeline = {
    */
   makeContentHolder: function(){
     var height = timeline.meas.height;
-    var width = timeline.meas.textHolderWidth;
-    var contentHolder = document.createElement("div");
-    var eventContentDiv = document.createElement("div");
-    var textP = document.createElement("p");
+    var width = timeline.meas.contentHolderWidth;
 
-    contentHolder.setAttribute("class","text-holder");
+    var contentHolder = timeline.elem.contentHolder = document.getElementById("content-holder");
+    var eventContentDiv = timeline.elem.eventContent = document.createElement("div");
+    var textP = timeline.elem.textElement = document.createElement("p");
+
+    contentHolder.onclick = function(){
+      timeline.expand(this);
+    }
+
+    contentHolder.ontouchmove = function(){
+      timeline.expand(this);
+    }
+
     contentHolder.style.width = width + "px";
     contentHolder.style.height = height + "px";
 
@@ -140,7 +152,6 @@ var timeline = {
 
     contentHolder.appendChild(eventContentDiv);
     contentHolder.appendChild(textP);
-    document.body.appendChild(contentHolder);
   },
 
 
@@ -268,6 +279,7 @@ var timeline = {
   bindEventsAndCall: function(){
     d3.select("html").on("touchmove",function(){
       timeline.isScrolledIntoView();
+      timeline.deExpand();
     });
 
     timeline.isScrolledIntoView();
@@ -320,6 +332,7 @@ var timeline = {
           timeline.showText(i); //calls function to display event description associated with the circle element
 
           data[i].displayed = true; //sets displayed property of this event object to true
+          timeline.displayed = true; //sets main object displayed property to true for use in other areas
         }
 
        //if circle isn't between the top or bottom of the viewer
@@ -335,6 +348,7 @@ var timeline = {
             .attr("fill","#bbbbbc");
 
           data[i].displayed = false;  //sets displayed property of this event object to false
+          timeline.displayed = false; //sets main object displayed property to false for use in other areas
         }
 
         //if all the way through elements and none within bounds
@@ -386,8 +400,6 @@ var timeline = {
     var contentImage = document.createElement("img");
 
     contentImage.src = "assets/images/" + image;
-    console.log(contentImage.src);
-
     contentElement.appendChild(contentImage);
     contentElement.style.opacity = 1;
   },
@@ -403,9 +415,6 @@ var timeline = {
    */
   showContentAudio: function(audio, contentElement){
     var audioWrapper = document.getElementsByClassName("prototype-wrapper")[0];
-
-    console.log(audio);
-
     var myCirclePlayer = new CirclePlayer("#jquery_jplayer_1",
     {
       oga: "assets/audio/" + audio
@@ -413,10 +422,12 @@ var timeline = {
       cssSelectorAncestor: "#cp_container_1"
     });
 
-    audioWrapper.style.width = timeline.meas.textHolderWidth + "px";
-    audioWrapper.style.opacity = 1;
-    audioWrapper.style.pointerEvents = "auto";
-    //audioWrapper.style.zIndex = 500;
+    if(audioWrapper){
+      audioWrapper.style.width = timeline.meas.contentHolderWidth + "px";
+      audioWrapper.style.opacity = 1;
+      audioWrapper.style.pointerEvents = "auto";
+      audioWrapper.style.display = "block";
+    }
   },
 
 
@@ -431,17 +442,60 @@ var timeline = {
    */
   showText: function(pos){
     var data = timeline.data;
-    var textElement = document.getElementById("p");
+    var textElement = timeline.elem.textElement;
     var textObject = data[pos].description; //gets the events associated description
 
     textElement.innerHTML = textObject;
-    textElement.style.top = (timeline.meas.height / 2) - (textElement.clientHeight / 2) + "px";
+    if(!timeline.expanded){
+      textElement.style.top = (timeline.meas.height / 2) - (textElement.clientHeight / 2) + "px";
+    }
     textElement.style.opacity = 1;  //makes text element visible
 
+    timeline.meas.textElementHeight = textElement.clientHeight; //save for use in deExpand function
     timeline.makeYearText(pos);
   },
 
 
+
+  expand: function(element){
+    if(timeline.expanded == true){
+      timeline.deExpand();
+      timeline.expanded = false;
+      return;
+    }
+    if(timeline.displayed == false) return;
+
+    timeline.elem.textElement.style.top = "0px";
+    timeline.elem.textElement.style.position = "relative";
+
+    timeline.elem.contentHolder.style.width = timeline.meas.width + "px";
+
+    timeline.elem.eventContent.style.width = timeline.meas.width - 40 + "px";
+
+    timeline.elem.viewer.style.zIndex = -1;
+    timeline.elem.viewer.style.opacity = 0;
+
+    timeline.expanded = true;
+  },
+
+  deExpand: function(){
+    timeline.elem.contentHolder.style.width = timeline.meas.contentHolderWidth + "px";
+    timeline.elem.viewer.style.zIndex = 3;
+    timeline.elem.viewer.style.opacity = 1;
+
+    timeline.elem.textElement.style.position = "absolute";
+    timeline.elem.textElement.style.top = (timeline.meas.height / 2) - (timeline.meas.textElementHeight/ 2) + "px";
+
+    setTimeout(function(){
+      timeline.elem.textElement.style.top = (timeline.meas.height / 2) - (timeline.elem.textElement.clientHeight/ 2) + "px";
+      console.log(timeline.elem.textElement.clientHeight);
+    }, 250);
+
+    timeline.elem.eventContent.style.width = timeline.meas.contentHolderWidth - 40 + "px";
+    timeline.elem.eventContent.style.top = 0 + "px";
+
+    timeline.expanded = false;
+  },
 
   hideContent: function(){
     document.getElementById("c").style.opacity = 0;
@@ -449,6 +503,7 @@ var timeline = {
     var audioWrapper = document.getElementsByClassName("prototype-wrapper")[0];
     audioWrapper.style.opacity = 0;
     audioWrapper.style.pointerEvents = "none";
+    audioWrapper.style.display = "none";
   },
 
 
@@ -459,7 +514,7 @@ var timeline = {
    *   so that it is no longer visible. **DOESN'T DELETE THE INNER HTML OF <p>**
    */
   hideText: function(){
-    var textElement = document.getElementById("p");
+    var textElement = timeline.elem.textElement;
 
     if(textElement){
       textElement.style.opacity = 0;  //makes text element not visible
@@ -485,6 +540,9 @@ var timeline = {
 
     yearText.text(function(d){return new Date(d.date).getYear() + 1900;});
 
+    //var yearTextWidth = parseInt(yearText.style("width"));
+    //console.log(yearText.text);
+
     //D3, gets year text of event and displays in viewer
     yearText.enter()
       .append("text")
@@ -494,6 +552,9 @@ var timeline = {
         .style("font-size", (viewerHeight - (viewerHeight / 8)) + "px")
         .style("text-shadow","2px 3px 4px rgba(0,0,0,.5)")
         .text(function(d){return new Date(d.date).getYear() + 1900;});
+
+    //var yearTextWidth = parseInt(yearText.style("width"));
+    yearText.attr("x", function(){return (((viewerWidth - (viewerWidth * (1 / 6))) - (parseInt(yearText.style("width")))) / 2)}); //center the year text in the viewer dynamically
   },
 
 
